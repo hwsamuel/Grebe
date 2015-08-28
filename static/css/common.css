@@ -1,0 +1,102 @@
+#submit_buttons
+{
+	margin-top: -7px;
+}
+.navbar
+{
+	background: #EEE;
+	height: 75px;	
+}
+.navbar .container
+{
+	margin-right: 50px;
+}
+#tweetdates
+{
+	width: 100px;
+}
+#keywords_list
+{
+	width: 350px;
+}
+#tweets_list
+{
+	width: 100%;
+}
+.scrollholder 
+{
+    border: solid #CCC 1px;
+    overflow: auto;
+    height: 200px;
+    padding: 5px;
+    margin: 5px;
+    margin-left: 0px;
+}
+#menu li.active a
+{
+	background: #29AE73;
+	color: #000;
+}
+.btn-black 
+{
+	color: #000;
+}
+#logo
+{
+	color: #000;
+	font-size: 20pt;
+	font-weight: bold;
+	margin-top: 10px;
+}
+#logo img
+{
+	height: 35px;
+	margin-top: -5px;
+}
+#slogan
+{
+	margin-top: 15px;
+	font-size: 10pt;
+}
+#filter_form
+{
+	margin-top: 10px;
+}
+#menu a
+{
+	font-weight: bold;
+	font-size: 12pt;
+}
+#extra_bar
+{
+    background: #EC971F; 
+    color: #FFF;
+    width: 100%; 
+    height: 30px; 
+    padding-top: 3px;
+    font-size: 12pt;
+}
+.btn 
+{
+    font-weight: bold;
+}
+.white-text
+{
+	color: #FFF;
+}
+.orange-text
+{
+	color: #EC971F;
+}
+.table
+{
+	margin-top: 10px;	
+}
+.table tbody tr td
+{
+	border: 0px;
+}
+#main-content
+{
+	min-height: 350px;
+}

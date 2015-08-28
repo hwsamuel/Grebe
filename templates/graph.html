@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block body %}
+	<p>&nbsp;</p>
+	<p id="graphdiv"></p>
+	<span class="small text-info">{{ total_count }} tweets graphed</span>
+	<script>
+	g = new Dygraph(
+    	document.getElementById("graphdiv"),
+    	
+    	"Date{{ header }}\n {{ stats }}",
+    	{
+	      	ylabel: 'Number of Tweets',
+	      	xlabel: 'Date',
+	      	legend: 'always',
+	      	width: 700,
+	      	height: 300,
+	      	labelsDivStyles: { 'textAlign': 'right' },
+	      	showRangeSelector: true
+	    }
+  	);
+
+	$('#filter_words').tagsinput({
+		tagClass: 'label label-info',
+		confirmKeys: [44],
+		maxTags: 5,
+		trimValue: true,
+		allowDuplicates: false
+	});
+	</script>
+{% endblock %}

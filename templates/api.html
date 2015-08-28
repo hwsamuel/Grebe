@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block body %}
+	<br />
+	{% for date in unique_dates|sort(reverse=True) %}
+		<p><button class="btn btn-success btn-md" onclick="$('#{{ date }}').toggle()">{{ date }}</button></p>
+		<table id="{{ date }}" style="display:none" class="small table table-hover">
+			<thead>
+				<tr>
+					<th width="20%">Tweet</th>
+					<th>Longitude</th>
+					<th>Latitude</th>
+					<th>Collected At</th>
+					<th>Created At</th>
+					{% for word in filter_words %}
+						<th>{{ word }}</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			
+			<tbody>
+			{% for tweet in tweets %}
+				{% if tweet.collected_at == date %}
+					<tr>
+						<td>{{ tweet.text }}</td>
+						{% if tweet.coordinates %}
+							<td>{{ tweet.coordinates.coordinates[0] }}</td>
+							<td>{{ tweet.coordinates.coordinates[1] }}</td>
+						{% else %}
+							<td>None</td>
+							<td>None</td>
+						{% endif %}
+						<td>{{ tweet.collected_at }}</td>
+						<td>{{ tweet.created_at }}</td>
+						{% for word in filter_words %}
+							<td>
+							{% if word in tweet.text.lower() or ('#' + word) in tweet.text.lower() %}
+								Yes
+							{% else %}
+								No
+							{% endif %}
+							</td>
+						{% endfor %}
+					</tr>
+				{% endif %}
+			{% endfor %}
+			</tbody>
+		</table>
+	{% endfor %}
+{% endblock %}
