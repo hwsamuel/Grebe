@@ -1,13 +1,10 @@
 '''
-	Grebe - Alberta Online Social Chatter Monitor
-	Retrieves Alberta-related tweets using Twitter Search and saves into SQLite database
-	
-	@author Hamman W. Samuel <hwsamuel@cs.ualberta.ca>
+	Generic search using keywords from a file
+	@author Hamman W. Samuel <hwsamuel@ualberta.ca>
 '''
 
 from tweepy import API
 from grebe_lib import GrebeLib
-from nltk.corpus import wordnet as wn
 from tweepy.error import RateLimitError, TweepError
 from tweepy.parsers import RawParser
 from bson.json_util import loads as json_to_bson
@@ -15,29 +12,24 @@ from hashlib import sha1
 from datetime import datetime
 from pymongo.errors import DuplicateKeyError
 
-class GrebeSearch():
+class KeywordSearch():
 	def __init__(self):
 		self.grebe_lib = GrebeLib()
 		
 	def lookup(self,word):
-		# Incircles inside Alberta area from http://www.freemaptools.com/radius-around-point.htm
-		
 		all_tweets = []
 		try:
 			api = API(self.grebe_lib.auth(),parser=RawParser())
 			
-			results = api.search(q=word,geocode='57.2505264790901,-114.9609375,305km')
-			all_tweets.append(results)
-			
-			results = api.search(q=word,geocode='52.17123655103791,-113.5546875,270km')
+			results = api.search(q=word)
 			all_tweets.append(results)
 		except Exception:
 			self.grebe_lib.pause()
 
 		return all_tweets
 	
-	def process(self):
-		keywords = self.grebe_lib.load('search_keywords')
+	def process(self,keywords_file):
+		keywords = self.grebe_lib.load(keywords_file)
 	
 		used_words = []
 		all_tweets = []
@@ -50,25 +42,11 @@ class GrebeSearch():
 			
 			all_tweets.append(self.get_tweets(word))
 			
-			synsets = wn.synsets(word)
-			for synset in synsets:
-				self.grebe_lib.respect()
-				lemmas = synset.lemma_names()
-				for lemma in lemmas:
-					if '_' in lemma:
-						continue
-					
-					if lemma in used_words:
-						continue
-					else:
-						used_words.append(lemma)
-					
-					all_tweets.append(self.get_tweets(lemma))
-	  	
 		return all_tweets
 	
 	def get_tweets(self, word):
-		tweets = self.lookup(word)[1]
+		found_tweets = self.lookup(word)
+		tweets = found_tweets[0]
 		bson = json_to_bson(tweets)
 		if len(bson['statuses']) > 0:
 			return bson['statuses'][0]
@@ -95,6 +73,6 @@ class GrebeSearch():
 				print 'Skipped duplicate tweet'
 
 if __name__ == '__main__':
-	search = GrebeSearch()
-	results = search.process()
+	search = KeywordSearch()
+	results = search.process('search_keywords')
 	search.save(results)
