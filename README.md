@@ -1,5 +1,15 @@
-Twitter monitor for retrieving Alberta-related tweets from live Twitter Stream and Twitter Search APIs and saving into MongoDB database.
+# Get the Code Running in 5 Steps
 
-The Twitter API requires consumer and access token keys. To set up your keys, use your Twitter account and follow the [instructions](http://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/). Afterwards, edit the source file to enter your tokens in `grebe_lib.py`. To set up MongoDB, please see the appropriate [documentation](http://docs.mongodb.org/manual).
+1. Make sure you have MongoDB [installed](http://docs.mongodb.org/manual)
+2. Install [Flask](http://flask.pocoo.org/) by using `pip install flask`
+3. Install [PyMongo](http://api.mongodb.com/python/current/) by using `pip install pymongo`
+4. In a terminal, use the command `python server.py` to run the Flask server
+5. In your web browser, go to [http://127.0.0.1:5000/grebe/](http://127.0.0.1:5000/grebe/)
 
-The code has three main components: a [Flask](http://flask.pocoo.org/) web application, a Stream API script, `grebe_stream.py` and a Search API script, `grebe_search.py`. To run the Search or Stream API script, call each separately from the command prompt, e.g. `python grebe_search.py`. The scripts monitor the respective Twitter APIs and store the appropriate tweets into MongoDB. The Flask web application provides a web interface for some analytics based on the stored tweets. To run the Flask app, use `python grebe.py` and then go to your web browser at [http://127.0.0.1:5000](http://127.0.0.1:5000).
+# Aggregating Twitter Data in 5 Steps
+
+1. Make sure you have MongoDB [installed](http://docs.mongodb.org/manual/)
+2. Set up your [Twitter API keys](http://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/)
+3. Edit `grebe.py` and enter your API keys.
+4. In a terminal, use the command `python grebe.py [stream | search] [ON | QC | NS | NB | MB | BC | PE | SK | AB | NL]` to run the aggregator
+5. If you want to aggregate data automatically, set up the commands above to run at scheduled intervals, for example as a cron job
