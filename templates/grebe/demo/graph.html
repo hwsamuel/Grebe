@@ -1,0 +1,57 @@
+{% extends "grebe/layout.html" %}
+
+{% block head %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/dygraph-combined-dev.js') }}"></script>
+<style>
+    .btn-sm {
+        border: none;
+        color: #000;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+	<div class="well">
+    Here's an interactive timeline of top keywords from a live sample of our dataset. The timeline allows selection of the date range.
+    </div>
+
+    {% if top_words %}
+    <p>
+    <form method="GET" action="{{ base_url }}/grebe/graph/demo/" class="form-inline">
+    <input type="text" name="word" value="{% if custom != None %}{{ selw }}{% endif %}" class="form-control" placeholder="Search for custom word" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" />
+    <input type="hidden" name="custom" />
+    {% for k,v in top_words %}
+        {% if k == selw %}
+            <a href="{{ base_url }}/grebe/graph/demo?word={{ k }}" class="btn btn-sm btn-success">{{ k }}</a>
+        {% else %}
+            <a href="{{ base_url }}/grebe/graph/demo?word={{ k }}" class="btn btn-sm btn-info keywords">{{ k }}</a>
+        {% endif %}
+    {% endfor %}
+    <a href="{{ base_url }}/grebe/graph/demo" class="pull-right btn btn-sm btn-warning">Clear</a>
+    <select class="form-control" name="province" onchange="this.form.submit()">
+        <option value="" disabled selected>Select Province</option>
+        <option {% if sel_prov == "AB" %}selected{% endif %} value="AB">Alberta</option>
+        <option {% if sel_prov == "BC" %}selected{% endif %} value="BC">British Columbia</option>
+        <option {% if sel_prov == "SK" %}selected{% endif %} value="SK">Saskatchewan</option>
+    </select>
+    </form>
+    </p>
+    {% endif %}
+    <div class="well"><p id="graphdiv"></p></div>
+	<script>
+	g = new Dygraph(
+    	document.getElementById("graphdiv"),
+    	"{{ header }}\n {{ stats }}",
+        {
+            ylabel: 'Number of Tweets',
+	      	xlabel: 'Date',
+	      	legend: 'always',
+            strokeWidth: 3,
+            highlightCircleSize: 5,
+            height: 300,
+	      	labelsDivStyles: { 'textAlign': 'right' },
+	      	showRangeSelector: true
+	    }
+  	);
+	</script>
+{% endblock %}

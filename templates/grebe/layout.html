@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<head>
+	<title>Grebe</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+	{% block head %}{% endblock %}
+    <style>
+        .navbar {
+            background: #444;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .navbar-brand span {
+            color: #FFF;
+        }
+        .navbar-nav span {
+            color: #FFF;
+        }
+        .active span {
+            font-weight: bold;
+            color: #FFA500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar navbar-inverse" role="navigation">
+		<div class="container">
+	        <div class="navbar-header">
+	       		<a class="navbar-brand" href="{{ base_url }}/grebe"><span>Grebe Social Data Aggregator</span></a>
+            </div>
+            <div class="navbar-right">
+                <ul class="nav navbar-nav">
+                    <li {% if active == 'index' %}class='active'{% endif %}><a href="{{ base_url }}/grebe"><span>Home</span></a></li>
+                    <li {% if active == 'api' %}class='active'{% endif %}><a href="{{ base_url }}/grebe/api/demo"><span>API Demo</span></a></li>
+                    <li {% if active == 'timemap' %}class='active'{% endif %}><a href="{{ base_url }}/grebe/timemap/demo"><span>Time Map Demo</span></a></li>
+                    <li {% if active == 'graph' %}class='active'{% endif %}><a href="{{ base_url }}/grebe/graph/demo"><span>Graph Demo</span></a></li>
+                    <li {% if active == 'about' %}class='active'{% endif %}><a href="{{ base_url }}/grebe/about"><span>About Us</span></a></li>
+                </ul>
+			</div>
+        </div>
+	</div>
+	
+	<div class="container">
+		{% with flashes = get_flashed_messages(with_categories=true) %}
+    		{% if flashes %}
+  				{% for category, message in flashes %}
+        			<div class="alert alert-{{ category }}">
+        				<a href="#" class="close" data-dismiss="alert">&times;</a>
+  						{{ message }}
+        			</div>
+      			{% endfor %}
+  			{% endif %}
+  		{% endwith %}
+  		
+        <div>{% block body %}{% endblock %}</div>
+  	    
+        <hr>
+		<footer>
+            <p>&copy; 2017 All Rights Reserved</p>
+      	</footer>
+  	</div>  
+</body>
