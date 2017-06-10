@@ -3,3 +3,8 @@ archive/
 .settings/
 .project
 .pydevproject
+.cache/*
+etc/*
+crontab.txt
+gcache.sh
+wsgi.py
