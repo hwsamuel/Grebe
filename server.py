@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, Response, url_for, jsonify
+from flask_httpauth import HTTPBasicAuth
 from bson.json_util import dumps
 from datetime import datetime, timedelta
 from pymongo import MongoClient
@@ -9,9 +10,13 @@ from gexport import *
 from gstats import *
 
 MAX_DATE_RANGE = 30
-STOP_WORDS_FILE = 'glasgow.txt'
+BATCH_SIZE = 100000
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
+out_file = None
+
+from registered import *
 
 def demo_data():
     demo_cache = ".cache/grebe/demo_data.p"
@@ -21,7 +26,7 @@ def demo_data():
             return pickle.load(open(demo_cache, "rb" ))
     
     num_dates = MAX_DATE_RANGE
-    base = datetime.now()
+    base = datetime.now() #base = datetime.strptime('26-7-2016','%d-%m-%Y')
     tweets = []
     end_date = None
     start_date = None
@@ -45,7 +50,7 @@ def demo_tweets(start, end, partition = 5):
 
 def top_words():
     demo_tweets = demo_data()[0]
-    f = open(STOP_WORDS_FILE)
+    f = open("glasgow")
     stop_words = [l.strip() for l in f.readlines()]
     dict = {}
     for tweet in demo_tweets:
@@ -60,6 +65,14 @@ def top_words():
                 dict[t] = 1
     dict = {k:v for k,v in dict.items() if v > 1}
     return sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:8]
+
+@app.route('/')
+def binclay():
+    return render_template('index.html',active='index')
+
+@app.route('/cardea/')
+def cardea():
+    return render_template('cardea/index.html',active='index')
 
 @app.route('/grebe/')
 def grebe():
@@ -183,6 +196,74 @@ def graph_demo():
     
     tw = top_words()
     return render_template('grebe/demo/graph.html',active='graph',stats=stats,header=header,top_words=tw,selw=filter_word,sel_prov=sel_prov)
+    
+@app.route("/grebe/api/", methods=['GET'])
+@auth.login_required
+def api():
+    try:
+        start = request.args.get('start')
+        end = request.args.get('end')
+        
+        start = datetime.strptime(start, '%d-%m-%Y')
+        end =  datetime.strptime(end, '%d-%m-%Y')
+        
+        if end < start:
+            raise Exception('The end date is before the start date')
+
+        delta = end-start
+        if delta.days > MAX_DATE_RANGE:
+            raise Exception('The API supports a maximum range of ' + str(MAX_DATE_RANGE) + ' days')
+
+        if request.args.get('province'):
+            province = request.args.get('province')
+            if province in [p.name for p in Provinces]:
+                prov = re.compile(Provinces[province].value.name+"$", re.I)
+            else:
+                raise Exception('The Province code is invalid')
+        else:
+            raise Exception('The Province filter is required')
+
+        if request.args.get('keywords'):
+            keywords = request.args.get('keywords')
+            search = re.compile(keywords, re.I)
+        else:
+            keywords = ""
+            search = ""
+
+        if request.args.get('fields'):
+            fields = request.args.get('fields')
+        else:
+            fields = 'id_str,text,collection_type,created_at,collected_at,user.id,user.screen_name,user.geo_enabled,user.location,geo.coordinates,geo.coordinates,place.full_name,place.country'
+        
+        signature = '.cache/grebe/'+hashlib.sha1(str(start)+str(end)+province+keywords+fields).hexdigest()+'.p'
+        if os.path.isfile(signature):
+            out = pickle.load(open(signature, "rb" ))
+        else:
+            fields = dict([(k, True) for k in fields.split(',')])
+            fields['_id'] = False    
+            
+            client = MongoClient()
+            tweets = client.grebe.tweets.find({"text": {'$regex': search}, "place.full_name": {'$regex': prov}, 'coordinates.coordinates': {'$exists': True}, 'created_at': {'$gte': str(start), '$lte': str(end)}}, projection=fields).batch_size(BATCH_SIZE)
+
+            out = '[' 
+            for tweet in tweets:
+                out += str(json.dumps(tweet))+',\n'
+            out = out[:-2]
+            out += ']'
+            pickle.dump(out, open(signature, "wb"))
+
+        generator = (cell for row in out for cell in row)
+        return Response(generator, mimetype="text/plain", headers={"Content-Disposition":"attachment;filename="+out_file+".json"})
+    except Exception as e:
+        return 'Error: ' + str(e)
+
+@auth.get_password
+def get_pwd(username):
+    global out_file
+    out_file = username
+    if username in USERS:
+        return USERS.get(username)
+    return None
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',debug=True,threaded=True)
