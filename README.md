@@ -11,5 +11,5 @@
 1. Make sure you have MongoDB [installed](http://docs.mongodb.org/manual/)
 2. Set up your [Twitter API keys](http://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/)
 3. Edit `grebe.py` and enter your API keys.
-4. In a terminal, use the command `python grebe.py [stream | search] [ON | QC | NS | NB | MB | BC | PE | SK | AB | NL]` to run the aggregator
+4. In a terminal, use the following command to run the aggregator `python grebe.py [stream | search] [ON | QC | NS | NB | MB | BC | PE | SK | AB | NL]`
 5. If you want to aggregate data automatically, set up the commands above to run at scheduled intervals, for example as a cron job
