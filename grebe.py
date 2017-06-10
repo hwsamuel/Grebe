@@ -1,192 +1,121 @@
-'''
-    Grebe - Alberta Online Social Chatter Monitor
-    Web app to query Alberta tweets index
-    
-    @author Hamman W. Samuel <hwsamuel@cs.ualberta.ca>    
-    @todo Look up synonyms of filter words, and related senses, e.g. fever looks up headache, aches, etc.
-    @todo Add Instagram, Snapchat to collections
-'''
-# -*- coding: utf-8 -*-
-from flask import Flask, request, session, url_for, redirect, render_template, abort, g, flash
-from flask.testsuite.config import SECRET_KEY
-from re import compile
-from re import IGNORECASE
-from jinja2 import evalcontextfilter, Markup, escape
-from itertools import chain
-from pymongo import MongoClient
+#!/usr/bin/python
+
+import tweepy, sys, json, traceback
+from bson.json_util import loads as json_to_bson
+from hashlib import sha1
 from datetime import datetime
-from time import strptime,mktime
-from timeit import timeit
-import matplotlib.pyplot as plt
-from wordcloud import WordCloud
-from helper import *
-from wordcloud.wordcloud import STOPWORDS
-from lxml import html
-import requests
+from pymongo import MongoClient
+from time import sleep, strptime, mktime, time
+from province import Province, Provinces
 
-DEBUG = True
-SECRET_KEY = 'iwnCeK2hs7RL'
+mode = None
+province = None
+client = MongoClient()
+RATE_LIMIT = 15*60
 
-_paragraph_re = compile(r'(?:\r\n|\r|\n){2,}')
-app = Flask(__name__)
-app.config.from_object(__name__)
-app.config.from_envvar('GREBE_SETTINGS', silent=True)
+class Stream(tweepy.StreamListener):
+    def __init__(self):
+        self.start_time = time()
+        super(Stream, self).__init__()
+        
+    def on_status(self, data):
+        if (time() - self.start_time) >= RATE_LIMIT:
+            sys.exit()
+        
+        save(data)
 
-def synonyms(word):
-    page = requests.get('http://moby-thesaurus.org/search?q=' + word)
-    tree = html.fromstring(page.text)
-    syns = tree.xpath('//ul[1]/li/a/text()')
-    return syns[:3]
+    def on_error(self, code):
+        print '[' + mode + ' - ' + province.name + '] ' + code
+        sys.exit()
 
-@app.template_filter()
-@evalcontextfilter
-def strip(eval_ctx, value):
-    result = value.replace('\n','')
-    result = result.replace('"',"'")
-    result = result.replace('\r','')
-    if eval_ctx.autoescape:
-        result = Markup(result)
-    return result
+class Search:
+    def __init__(self):
+        self.start_time = time()
+        
+    def query(self, api, province):
+        while True:
+            if (time() - self.start_time) >= RATE_LIMIT:
+                break
 
-def gen_wordcloud():
-    med_words = load_file('static/med_words')
-    mdb = get_mongo_db()
-    collection = mdb.tweets
-    all_tweets = list(collection.find())
-    index = ''
-    count = 0
-    for tweet in all_tweets:
-        tweet_tokens = [t for t in tokenize(tweet['text']) if t is not unicode('') and len(t) > 2]
-        tweet_tokens = [t for t in tweet_tokens if t in med_words]
-        index += ' '.join(tweet_tokens)
+            try:
+                tweets = api.search(q='place:'+province.value.id) # https://dev.twitter.com/rest/public/search-by-place
+                for tweet in tweets:
+                    save(tweet)
+            except Exception as e:
+                print '[' + mode + ' - ' + province.name + '] ' + str(e)
+                break
+        sys.exit()
+
+    def get_province_id(self, api, province):
+        # https://dev.twitter.com/rest/reference/get/geo/search
+        return api.geo_search(query=province.value.name, granularity='admin')[0].id
     
-    STOPWORDS.add('https')
-    STOPWORDS.add('amp')
-    STOPWORDS.add('co')
-    STOPWORDS.add('t')
-    wc = WordCloud(background_color="white",stopwords=STOPWORDS)
-    wc.generate(index)
-    plt.imshow(wc)
-    plt.axis("off")
-    plt.show()
-
-def get_mongo_db():
-    client = MongoClient()
-    return client.grebe
+def now():
+    return str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     
-def shared():
-    if request.method == 'POST' and request.form['filter_words']:
-        filter_words = request.form['filter_words'].split(',')
+def save(data):
+    global mode
+    global province
+    
+    bson = json_to_bson(json.dumps(data._json))
+    tweet_date = strptime(bson['created_at'], "%a %b %d %H:%M:%S +0000 %Y")
+    tweet_date = str(datetime.fromtimestamp(mktime(tweet_date)))
+    
+    bson['created_at'] = tweet_date
+    bson['text_hash'] = sha1(bson['text'].encode('punycode')).hexdigest()
+    bson['collected_at'] = now()
+    bson['collection_type'] = mode
+    bson['province'] = province.name
+    
+    if client.grebe.tweets.find_one({'text_hash': bson['text_hash']}) == None:
+        client.grebe.tweets.insert_one(bson)
+    
+def api(province):
+    # Keys sign up https://apps.twitter.com/
+    if province == Provinces.AB:
+        CONSUMER_KEY = 'CK1'
+        CONSUMER_SECRET = 'CS1'
+        ACCESS_TOKEN_KEY = 'ATK1'
+        ACCESS_TOKEN_SECRET = 'ATS1'
+    elif province == Provinces.SK:
+        CONSUMER_KEY = 'CK2'
+        CONSUMER_SECRET = 'CS2'
+        ACCESS_TOKEN_KEY = 'ATK2'
+        ACCESS_TOKEN_SECRET = 'ATS2'
+    elif province == Provinces.BC:
+        CONSUMER_KEY = 'CK3'
+        CONSUMER_SECRET = 'CS3'
+        ACCESS_TOKEN_KEY = 'ATK3'
+        ACCESS_TOKEN_SECRET = 'ATS3'
+    
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth.set_access_token(ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET)
+    return tweepy.API(auth)
+
+def main():
+    global mode
+    global province
+    
+    usage = '\nUsage: python grebe.py [stream | search] [ON | QC | NS | NB | MB | BC | PE | SK | AB | NL]\n'
+    
+    if len(sys.argv) != 3:
+        print usage
+        return
+    
+    mode = sys.argv[1]
+    try:
+        province = Provinces[sys.argv[2].upper()]
+    except Exception as e:
+        print usage, str(e)
+        return
+    
+    if mode == 'stream':
+        mystream = tweepy.Stream(api(province).auth, Stream())
+        mystream.filter(locations=province.value.geofence) # https://dev.twitter.com/streaming/overview/request-parameters#locations
+    elif mode == 'search':
+        mysearch = Search()
+        mysearch.query(api(province), province)
     else:
-        filter_words = []
+        print usage
 
-    header = ',' + ','.join(filter_words) if len(filter_words) > 0 else ''    
-    return [filter_words, header]
-
-@app.route('/')
-def default():
-    return redirect(url_for('graph'))
-
-@app.route('/wordcloud', methods=['POST', 'GET'])
-def wordcloud():
-    return render_template('wordcloud.html',active='wordcloud')
-
-@app.route('/api', methods=['POST', 'GET'])
-def api():
-    head = shared()
-    filter_words = head[0]
-    header = head[1]
-    
-    mdb = get_mongo_db()
-    collection = mdb.tweets
-    
-    all_tweets = []
-    tweet_ids = []
-    ignore = False
-    for word in filter_words:
-        tweets = list(collection.find({'text': compile('\\b' + word + '\\b', IGNORECASE)}, {'text':1, 'collected_at':1,'coordinates':1,'created_at':1}).sort('collected_at', -1))
-        
-        for row in tweets: # Ignore tweet if already covered by other keyword
-            id = row['_id']
-            if id in tweet_ids:
-                ignore = True
-            else:
-                tweet_ids.append(id)
-                ignore = False
-        
-        if ignore == True:
-            continue
-                 
-        all_tweets.append(tweets)
-    
-    flat_tweets = flatten(all_tweets)
-    unique_dates = collection.distinct('collected_at')
-
-    return render_template('api.html',active='api',header=header,filter_words=filter_words,tweets=flat_tweets,unique_dates=unique_dates)
-
-@app.route('/timemap', methods=['POST', 'GET'])
-def timemap():
-    head = shared()
-    filter_words = head[0]
-    header = head[1]
-    
-    mdb = get_mongo_db()
-    collection = mdb.tweets
-    
-    themes = []
-    all_tweets = []
-    colors = ['red','yellow','green','blue','orange']
-    i = 0
-    unmappable = 0
-    tweet_ids = []
-    ignore = False
-    for word in filter_words:
-        tweets = list(collection.find({'coordinates': {'$ne':None},'text': compile('\\b' + word + '\\b', IGNORECASE)}, {'text':1, 'collected_at':1,'coordinates':1,'created_at':1}).sort('collected_at', -1))
-        unmappable += collection.find({'coordinates': None,'text': compile('\\b' + word + '\\b', IGNORECASE)}).count()
-
-        for row in tweets: # Ignore tweet if already covered by other keyword
-            ids = row['_id']
-            row['word'] = word
-            row['theme'] = colors[i]
-            if ids in tweet_ids:
-                ignore = True
-            else:
-                tweet_ids.append(id)
-                ignore = False
-        
-        if ignore == True:
-            continue
-                 
-        themes.append([word,colors[i]])
-        i += 1
-        all_tweets.append(tweets)
-    
-    flat_tweets = flatten(all_tweets)
-    flat_themes = flatten(themes)
-    return render_template('timemap.html',unmappable=unmappable,themes=themes,header=header,tweets=flat_tweets,active='timemap')
-
-@app.route('/graph', methods=['POST', 'GET'])
-def graph():
-    head = shared()
-    filter_words = head[0]
-    header = head[1]
-    
-    mdb = get_mongo_db()
-    collection = mdb.tweets
-    
-    unique_dates = collection.distinct('created_at')
-    
-    stats = ""
-    total_count = 0
-    for date in unique_dates:
-        stats += date + ','
-        for word in filter_words:
-            count = collection.find({'created_at': date, 'text': compile('\\b' + word + '\\b', IGNORECASE)},{'text':1, 'collected_at':1,'coordinates':1,'created_at':1}).count()
-            total_count += count
-            stats += str(count) + ','
-        stats = stats[:-1] + '\\n'
-
-    return render_template('graph.html',header=header,stats=stats,total_count=total_count,active='graph')
-
-if __name__ == '__main__':
-    app.run()
+main()
