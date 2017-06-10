@@ -1,0 +1,117 @@
+{% extends "grebe/layout.html" %}
+
+{% block head %}
+	<script type="text/javascript" src="http://openlayers.org/api/OpenLayers.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='timemap/lib/mxn/mxn.js') }}?(openlayers)"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='timemap/lib/timeline-1.2.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='timemap/src/timemap.js') }}"></script>
+	
+	<style type="text/css">
+	.olFramedCloudPopupContent { 
+		width: 200px; 
+	}
+	#timelinecontainer{
+		width: 100%;
+		height: 100px;
+		border: 1px solid #CCC;
+		border-bottom: 2px solid #AAA;
+	}
+	#timeline{
+		width: 100%;
+		height: 100%;
+		font-size: 14px;
+		background: #EEE;
+	}
+	#mapcontainer {
+		border: 1px solid #CCC;
+		width: 100%;
+		height: 300px;
+	}
+	#map {
+		width: 100%;
+		height: 100%;
+		background: #EEEEEE;
+	}
+    .keywords {
+        background: #6991FD;
+        color: #080808;
+    }
+    .btn-sm {
+        color: #000;
+    }
+	</style>
+	
+	<script type="text/javascript">
+	var tm;
+	$(function() {	
+		tm = TimeMap.init({
+	        mapId: "map",
+	        timelineId: "timeline",
+	        options: {
+	            eventIconPath: "{{ url_for('static', filename='timemap/images/') }}"
+	        },
+	        datasets: 
+        	[{
+                type: "basic",
+                options: {
+                    items: [
+						{% for tweet in tweets %}
+    					{
+	                    	"start" : "{{ tweet.created_at }}",
+	                      	"point" : {
+	                        	"lat" : {{ tweet.coordinates.coordinates[1] }},
+	                          	"lon" : {{ tweet.coordinates.coordinates[0] }}
+	                       	},
+	                      	"title" : "@{{ tweet.user.screen_name }}",
+	                      	"options" : {
+	                        	"infoHtml": "<div>{{ tweet.text.replace('\n','').encode('punycode') }}</div>",
+	                        	"theme": "blue"
+	                      	}
+	                    },
+                    	{% endfor %}
+                    ]
+                }
+            }],
+            bandInfo: [ 
+	            { 
+	               width: "100%", 
+	               intervalUnit: Timeline.DateTime.DAY,
+	               intervalPixels: 210 
+	            } 
+            ], 
+	    });
+	});
+    </script>
+{% endblock %}
+
+{% block body %}
+<div class="well">
+Here's an interactive visualization of our live dataset sample on a combined map and timeline. Clickable top keywords are also displayed to demo search capability.
+</div>
+
+{% if top_words %}
+<p>
+<form method="GET" action="{{ base_url }}/grebe/timemap/demo/" class="form-inline">
+<input type="text" name="word" value="{% if custom != None %}{{ selw }}{% endif %}" class="form-control" placeholder="Search for custom word" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" />
+<input type="hidden" name="custom" />
+{% for k,v in top_words %}
+    {% if k == selw %}
+        <a href="{{ base_url }}/grebe/timemap/demo?word={{ k }}" class="btn btn-sm btn-success">{{ k }}</a>
+    {% else %}
+        <a href="{{ base_url }}/grebe/timemap/demo?word={{ k }}" class="btn btn-sm btn-info keywords">{{ k }}</a>
+    {% endif %}
+{% endfor %}
+<a href="{{ base_url }}/grebe/timemap/demo" class="pull-right btn btn-sm btn-warning">Clear</a>
+</form>
+</p>
+{% endif %}
+
+<div id="timemap">
+    <div id="timelinecontainer">
+      <div id="timeline" style="overflow-x:hidden; overflow-y:scroll;"></div>
+    </div>
+    <div id="mapcontainer">
+      <div id="map"></div>
+    </div>
+</div>
+{% endblock %}

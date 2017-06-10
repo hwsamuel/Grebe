@@ -1,0 +1,62 @@
+{% extends "grebe/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="jumbotron">
+        <h2><b>Geo-Fenced Social Data for R&amp;D</b></h2>
+        <p align="justify">Grebe has over 1.5 million tweets (and counting) from different regions of Canada <a class="btn btn-warning btn-sm" data-toggle="modal" data-target="#stats" href="#">View Stats</a></p> 
+    </div>
+    <div id="stats" class="modal" role="dialog">
+        <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4>Stats (Updated Weekly)</h4>
+                
+                <table class="table">
+                <tbody>
+                <tr>
+                    <td>Total Tweets</td>
+                    <td>{{ counts[0] }}</td>
+                </tr>
+                <tr>
+                    <td>Tweets with Coordinates</td>
+                    <td>{{ counts[1] }}</td>
+                </tr>
+                <tr>
+                    <td>Tweets from Alberta</td>
+                    <td>{{ counts[2] }}</td>
+                </tr>
+                <tr>
+                    <td>Tweets from Saskatchewan</td>
+                    <td>{{ counts[3] }}</td>
+                </tr>
+                <tr>
+                    <td>Tweets from British Columbia</td>
+                    <td>{{ counts[4] }}</td>
+                </tr>
+                </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="row">
+	<div class="col-md-4">
+  		<h2>RESTful API</h2>
+  		<p class="text-justify">Directly access the raw data yourself</p>
+  		<p><a class="btn btn-black btn-info" href="{{ base_url }}/grebe/api/demo" role="button">API Demo</a></p>
+	</div>
+	<div class="col-md-4">
+  		<h2>Time Map Visualizer</h2>
+  		<p class="text-justify">View tweet location and time in one place</p>
+  		<p><a class="btn btn-black btn-info" href="{{ base_url }}/grebe/timemap/demo" role="button">Time Map Demo</a></p>
+	</div>
+	<div class="col-md-4">
+  	    <h2>Graph Visualizer</h2>
+  		<p class="text-justify">View tweet keyword trends on a timeline</p>
+  		<p><a class="btn btn-black btn-info" href="{{ base_url }}/grebe/graph/demo" role="button">Graph Demo</a></p>
+	</div>
+    </div>
+</div>
+{% endblock %}
