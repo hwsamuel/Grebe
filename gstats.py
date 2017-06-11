@@ -20,7 +20,7 @@ def main():
     print 'Total Tweets: '+str(all_tweets().count())
     print 'Tweets with coordinates: '+str(tweets_with_coordinates().count())
     
-    provinces = [Provinces.AB, Provinces.SK, Provinces.BC]
+    provinces = [Provinces.AB, Provinces.SK, Provinces.BC, Provinces.MB]
     for province in provinces:
         tweets = tweets_in_province(province)
         print 'Tweets from ' + province.value.name + ': ' + str(tweets.count())
