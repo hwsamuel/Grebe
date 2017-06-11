@@ -45,8 +45,9 @@ def demo_tweets(start, end, partition = 5):
     ab_tweets = get_tweets(start=start,end=end,province=Provinces.AB,fields=fields)
     bc_tweets = get_tweets(start=start,end=end,province=Provinces.BC,fields=fields)
     sk_tweets = get_tweets(start=start,end=end,province=Provinces.SK,fields=fields)
+    mb_tweets = get_tweets(start=start,end=end,province=Provinces.MB,fields=fields)
 
-    return ab_tweets[:partition] + bc_tweets[:partition] + sk_tweets[:partition]
+    return ab_tweets[:partition] + bc_tweets[:partition] + sk_tweets[:partition] + mb_tweets[:partition]
 
 def top_words():
     demo_tweets = demo_data()[0]
@@ -88,7 +89,8 @@ def grebe():
     ab_tweets = tweets_in_province(Provinces.AB).count()
     sk_tweets = tweets_in_province(Provinces.SK).count()
     bc_tweets = tweets_in_province(Provinces.BC).count()
-    counts = [num_tweets,coord_tweets,ab_tweets,sk_tweets,bc_tweets]
+    mb_tweets = tweets_in_province(Provinces.MB).count()
+    counts = [num_tweets,coord_tweets,ab_tweets,sk_tweets,bc_tweets,mb_tweets]
     pickle.dump(counts, open(stats_cache, "wb"))
     return render_template('grebe/index.html',active='index',counts=counts)
 
