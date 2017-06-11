@@ -67,14 +67,6 @@ def top_words():
     dict = {k:v for k,v in dict.items() if v > 1}
     return sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:8]
 
-@app.route('/')
-def binclay():
-    return render_template('index.html',active='index')
-
-@app.route('/cardea/')
-def cardea():
-    return render_template('cardea/index.html',active='index')
-
 @app.route('/grebe/')
 def grebe():
     stats_cache = ".cache/grebe/stats.p"
