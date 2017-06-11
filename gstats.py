@@ -25,4 +25,5 @@ def main():
         tweets = tweets_in_province(province)
         print 'Tweets from ' + province.value.name + ': ' + str(tweets.count())
 
-#main()
+if __name__ == "__main__":
+    main()
