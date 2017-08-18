@@ -19,7 +19,7 @@ out_file = None
 from registered import *
 
 def demo_data():
-    demo_cache = ".cache/grebe/demo_data.p"
+    demo_cache = "/home/ubuntu/.cache/grebe/demo_data.p"
     if os.path.isfile(demo_cache):
         creation_time = os.path.getctime(demo_cache)
         if (time.time() - creation_time) // (24 * 3600) < MAX_DATE_RANGE:
@@ -69,7 +69,7 @@ def top_words():
 
 @app.route('/grebe/')
 def grebe():
-    stats_cache = ".cache/grebe/stats.p"
+    stats_cache = "/home/ubuntu/.cache/grebe/stats.p"
     if os.path.isfile(stats_cache):
         creation_time = os.path.getctime(stats_cache)
         if (time.time() - creation_time) // (24 * 3600) < 7: # Weekly updates
@@ -229,7 +229,7 @@ def api():
         else:
             fields = 'id_str,text,collection_type,created_at,collected_at,user.id,user.screen_name,user.geo_enabled,user.location,geo.coordinates,geo.coordinates,place.full_name,place.country'
         
-        signature = '.cache/grebe/'+hashlib.sha1(str(start)+str(end)+province+keywords+fields).hexdigest()+'.p'
+        signature = '/home/ubuntu/.cache/grebe/'+hashlib.sha1(str(start)+str(end)+province+keywords+fields).hexdigest()+'.p'
         if os.path.isfile(signature):
             out = pickle.load(open(signature, "rb" ))
         else:

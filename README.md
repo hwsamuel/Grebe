@@ -1,9 +1,9 @@
 # Get the Web App Running in 5 Steps
 
 1. Make sure you have [Python](https://www.python.org/downloads/) and [MongoDB](http://docs.mongodb.org/manual/) installed
-2. Install [Flask](http://flask.pocoo.org/) by using `pip install flask`
+2. Install [Flask](http://flask.pocoo.org/) by using `pip install flask` and the HTTP Auth dependency via `pip install flask-httpauth` 
 3. Install [PyMongo](http://api.mongodb.com/python/current/) by using `pip install pymongo`
-4. In a terminal, use the command `python server.py` to run the Flask server
+4. In a terminal, use the command `python gserver.py` to run the Flask server
 5. In your web browser, go to [http://127.0.0.1:5000/grebe/](http://127.0.0.1:5000/grebe/)
 
 # Aggregating Twitter Data in 5 Steps
