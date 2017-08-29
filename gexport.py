@@ -1,18 +1,15 @@
-from pymongo import MongoClient
 from datetime import datetime
 from province import Province, Provinces
-import time, re
+import time, mysql.connector as mariadb
 
-client = MongoClient()
-BSIZE = 100000
+mariadb_connection = mariadb.connect(user='root', password='', database='grebe')
+cursor = mariadb_connection.cursor(buffered=True)
+
 EPOCH = '2016-07-14'
 
-def get_tweets(start = None, end = None, keywords = None, fields = None, province = None):
+def get_tweets(start = None, end = None, keywords = None, fields = None, province = None, strict = True):
     if fields == None:
-        fields = 'id_str,text,collection_type,created_at,collected_at,user.id,user.screen_name,user.geo_enabled,user.location,coordinates.coordinates,place.full_name,place.country'
-    
-    fields = dict([(k, True) for k in fields.split(',')])
-    fields['_id'] = False
+        fields = 'tweet, longitude, latitude, created_at, place_name'
     
     if start == None:
         start = datetime.strptime(EPOCH, '%Y-%m-%d')
@@ -27,9 +24,22 @@ def get_tweets(start = None, end = None, keywords = None, fields = None, provinc
 
     if end < start:
         raise Exception('The end date is before the start date')
-
-    search = re.compile(keywords, re.I) if keywords else ""
-    province = re.compile(province.value.name+"$", re.I) if province else ""
-    tweets = client.grebe.tweets.find({"text": {'$regex': search}, "place.full_name": {'$regex': province}, 'coordinates.coordinates': {'$exists': True}, 'created_at': {'$gte': str(start), '$lte': str(end)}},projection=fields).batch_size(BSIZE)
-
-    return list(tweets)
+    
+    if strict:
+        strict_filter = "longitude Is Not Null AND latitude Is Not Null AND "
+    else:
+        strict_filter = ""
+    qry = "SELECT " + fields + " FROM tweets WHERE " + strict_filter + " created_at >= '" + str(start) + "' AND created_at <= '" + str(end) + "'"
+    
+    if province:
+        qry += " AND (place_name Like '%" + province.value.name + "')"
+    
+    if keywords:
+        keywords = keywords.lower()
+        st = "tweet Like '%"
+        keywords = keywords.replace('|', "%' OR " + st)
+        keywords = keywords.replace('+', "%' AND " + st)
+        qry += " AND (" + st + keywords + "%')"
+    
+    cursor.execute(qry)
+    return list(cursor)

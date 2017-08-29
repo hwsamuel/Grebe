@@ -1,29 +1,29 @@
-from datetime import datetime
-from pymongo import MongoClient
 from province import Province, Provinces
-import re
+import mysql.connector as mariadb
 
-client = MongoClient()
-BSIZE = 100000
+mariadb_connection = mariadb.connect(user='root', password='', database='grebe')
+cursor = mariadb_connection.cursor(buffered=True)
 
 def all_tweets():
-    return client.grebe.tweets.find().batch_size(BSIZE)
+    cursor.execute("SELECT Count(id) FROM tweets")
+    return cursor.fetchone()[0]
 
 def tweets_with_coordinates():
-    return client.grebe.tweets.find({'coordinates.coordinates': {'$exists':True}}).batch_size(BSIZE)
+    cursor.execute("SELECT Count(id) FROM tweets WHERE latitude Is Not Null AND longitude Is Not Null")
+    return cursor.fetchone()[0]
 
 def tweets_in_province(province):
-    province = re.compile(province.value.name+"$", re.I)
-    return client.grebe.tweets.find({'coordinates.coordinates': {'$exists':True}, "place.full_name": {'$regex': province}}).batch_size(BSIZE)
+    cursor.execute("SELECT Count(id) FROM tweets WHERE latitude Is Not Null AND longitude Is Not Null AND place_name Like '%" + province.value.name + "'")
+    return cursor.fetchone()[0]
 
 def main():
-    print 'Total Tweets: '+str(all_tweets().count())
-    print 'Tweets with coordinates: '+str(tweets_with_coordinates().count())
+    print 'Total Tweets: '+str(all_tweets())
+    print 'Tweets with coordinates: '+str(tweets_with_coordinates())
     
     provinces = [Provinces.AB, Provinces.SK, Provinces.BC, Provinces.MB]
     for province in provinces:
         tweets = tweets_in_province(province)
-        print 'Tweets from ' + province.value.name + ': ' + str(tweets.count())
+        print 'Tweets from ' + province.value.name + ': ' + str(tweets)
 
 if __name__ == "__main__":
     main()
