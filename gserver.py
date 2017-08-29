@@ -2,31 +2,30 @@ from flask import Flask, render_template, request, Response, url_for, jsonify
 from flask_httpauth import HTTPBasicAuth
 from bson.json_util import dumps
 from datetime import datetime, timedelta
-from pymongo import MongoClient
 import json, math, re, operator, pickle, os.path, time, hashlib
 
 from province import Province, Provinces
 from gexport import *
 from gstats import *
+from registered import *
 
 MAX_DATE_RANGE = 30
 BATCH_SIZE = 100000
+HOME_DIR = '/home/ubuntu/.cache/grebe/' #'F:/PhD/Grebe/source/.cache/grebe/'
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 out_file = None
 
-from registered import *
-
 def demo_data():
-    demo_cache = "/home/ubuntu/.cache/grebe/demo_data.p"
+    demo_cache = HOME_DIR + "demo_data.p"
     if os.path.isfile(demo_cache):
         creation_time = os.path.getctime(demo_cache)
         if (time.time() - creation_time) // (24 * 3600) < MAX_DATE_RANGE:
             return pickle.load(open(demo_cache, "rb" ))
     
     num_dates = MAX_DATE_RANGE
-    base = datetime.now() #base = datetime.strptime('26-7-2016','%d-%m-%Y')
+    base = base = datetime.now() #datetime.strptime('26-7-2016','%d-%m-%Y')
     tweets = []
     end_date = None
     start_date = None
@@ -37,25 +36,26 @@ def demo_data():
         end_date = end if end_date == None else end_date
         tweets += demo_tweets(start,end, 2)
     
-    pickle.dump([tweets, start_date, end_date], open(demo_cache, "wb"))
-    return tweets, start_date, end_date
+    pickle.dump(tweets, open(demo_cache, "wb"))
+    return tweets
 
 def demo_tweets(start, end, partition = 5):
-    fields = 'coordinates.coordinates,text,place.full_name,created_at,user.screen_name'
-    ab_tweets = get_tweets(start=start,end=end,province=Provinces.AB,fields=fields)
-    bc_tweets = get_tweets(start=start,end=end,province=Provinces.BC,fields=fields)
-    sk_tweets = get_tweets(start=start,end=end,province=Provinces.SK,fields=fields)
-    mb_tweets = get_tweets(start=start,end=end,province=Provinces.MB,fields=fields)
+    ab_tweets = get_tweets(start=start,end=end,province=Provinces.AB)
+    bc_tweets = get_tweets(start=start,end=end,province=Provinces.BC)
+    sk_tweets = get_tweets(start=start,end=end,province=Provinces.SK)
+    mb_tweets = get_tweets(start=start,end=end,province=Provinces.MB)
 
     return ab_tweets[:partition] + bc_tweets[:partition] + sk_tweets[:partition] + mb_tweets[:partition]
 
 def top_words():
-    demo_tweets = demo_data()[0]
+    demo_tweets = demo_data()
+    
     f = open("glasgow")
     stop_words = [l.strip() for l in f.readlines()]
+    
     dict = {}
     for tweet in demo_tweets:
-        tokens = re.compile("[^a-zA-Z0-9']").split(tweet['text'].encode('punycode'))
+        tokens = re.compile("[^a-zA-Z0-9']").split(tweet[0])
         for t in tokens:
             t = t.lower().strip()
             if t in stop_words or len(t) < 2:
@@ -69,19 +69,19 @@ def top_words():
 
 @app.route('/grebe/')
 def grebe():
-    stats_cache = "/home/ubuntu/.cache/grebe/stats.p"
+    stats_cache = HOME_DIR + "stats.p"
     if os.path.isfile(stats_cache):
         creation_time = os.path.getctime(stats_cache)
         if (time.time() - creation_time) // (24 * 3600) < 7: # Weekly updates
             counts = pickle.load(open(stats_cache, "rb" ))
             return render_template('grebe/index.html',active='index',counts=counts)
     
-    num_tweets = all_tweets().count()
-    coord_tweets = tweets_with_coordinates().count()
-    ab_tweets = tweets_in_province(Provinces.AB).count()
-    sk_tweets = tweets_in_province(Provinces.SK).count()
-    bc_tweets = tweets_in_province(Provinces.BC).count()
-    mb_tweets = tweets_in_province(Provinces.MB).count()
+    num_tweets = all_tweets()
+    coord_tweets = tweets_with_coordinates()
+    ab_tweets = tweets_in_province(Provinces.AB)
+    sk_tweets = tweets_in_province(Provinces.SK)
+    bc_tweets = tweets_in_province(Provinces.BC)
+    mb_tweets = tweets_in_province(Provinces.MB)
     counts = [num_tweets,coord_tweets,ab_tweets,sk_tweets,bc_tweets,mb_tweets]
     pickle.dump(counts, open(stats_cache, "wb"))
     return render_template('grebe/index.html',active='index',counts=counts)
@@ -92,34 +92,40 @@ def about():
 
 @app.route('/grebe/api/demo/')
 def api_demo():
-    data = demo_data()
-    demo_tweets = data[0]
+    demo_tweets = demo_data()
     return render_template('grebe/demo/api.html',active='api',tweets=demo_tweets)
 
 @app.route('/grebe/api/demo/json/')
 def json_demo():
-    data = demo_data()
-    demo_tweets = data[0]
-    start_date = data[1]
-    end_date = data[2]
-    
-    out = '['
+    demo_tweets = demo_data()
+    fields = 'tweet, longitude, latitude, created_at, place_name'
+
+    out = '[\n'
     for tweet in demo_tweets:
-        out += str(json.dumps(tweet))+',\n'
-    out = out[:-2]
-    out += ']'
-    return out
+        i = 0
+        out += "\t{\n"
+        for field in fields.split(','):
+            text = str(tweet[i])
+            out += '\t\t"' + field.strip() + '":"' + text + '",\n'
+            i += 1
+        out = out[:-2] + "\n\t},\n"
+    out = out[:-2]+'\n'
+    
+    if len(out.strip()) == 0:
+        return ""
+    else:
+        out += ']'
+        return out
 
 @app.route('/grebe/timemap/demo/')
 def timemap_demo():
-    data = demo_data()
-    demo_tweets = data[0]
+    demo_tweets = demo_data()
     if request.args.get('word'):
         filter_word = request.args.get('word').strip()
         
         sel_tweets = []
         for tweet in demo_tweets:
-            txt = tweet['text'].encode('punycode')
+            txt = tweet[0].encode('punycode')
             if re.search(filter_word, txt, re.IGNORECASE):
                 sel_tweets.append(tweet)
             else:
@@ -133,8 +139,8 @@ def timemap_demo():
 
 @app.route('/grebe/graph/demo/')
 def graph_demo():
-    demo_tweets = demo_data()[0]
-    dates = [d['created_at'].split()[0] for d in demo_tweets]
+    demo_tweets = demo_data()
+    dates = [d[3] for d in demo_tweets]
     unique_dates = list(set(dates))
     
     if request.args.get('word'):
@@ -142,7 +148,7 @@ def graph_demo():
         
         sel_tweets = []
         for tweet in demo_tweets:
-            txt = tweet['text'].encode('punycode')
+            txt = tweet[0].encode('punycode')
             if re.search(filter_word, txt, re.IGNORECASE):
                 sel_tweets.append(tweet)
             else:
@@ -158,7 +164,7 @@ def graph_demo():
         old_sel_tweets = sel_tweets
         sel_tweets = []
         for tweet in old_sel_tweets:
-            prov = tweet['place']['full_name']
+            prov = tweet[4]
             if re.search(province, prov, re.IGNORECASE):
                 sel_tweets.append(tweet)
             else:
@@ -175,14 +181,16 @@ def graph_demo():
             
     stats = ''
     for date in unique_dates:
+        date = str(date).split()[0]
         stats += date + ','
         for k,v in tw:
             count = 0
             for tweet in sel_tweets:
-                cd = tweet['created_at'].split()[0]
+                cd = str(tweet[3]).split()[0]
                 if date != cd:
                     continue
-                txt = tweet['text'].encode('punycode')
+                print 'here'
+                txt = tweet[0].encode('punycode')
                 if re.search(k, txt, re.IGNORECASE):
                     count += 1
             stats += str(count) + ','
@@ -208,46 +216,63 @@ def api():
         if delta.days > MAX_DATE_RANGE:
             raise Exception('The API supports a maximum range of ' + str(MAX_DATE_RANGE) + ' days')
 
+        if request.args.get('fields'):
+            fields = request.args.get('fields')
+        else:
+            fields = 'tweet, longitude, latitude, created_at, place_name'
+        
+        strict_filter = "longitude Is Not Null AND latitude Is Not Null AND "
+        qry = "SELECT " + fields + " FROM tweets WHERE " + strict_filter + " created_at >= '" + str(start) + "' AND created_at <= '" + str(end) + "'"
+            
         if request.args.get('province'):
             province = request.args.get('province')
             if province in [p.name for p in Provinces]:
-                prov = re.compile(Provinces[province].value.name+"$", re.I)
+                prov = Provinces[province].value.name
+                qry += " AND (place_name Like '%" + prov + "')"
             else:
                 raise Exception('The Province code is invalid')
         else:
             raise Exception('The Province filter is required')
 
         if request.args.get('keywords'):
-            keywords = request.args.get('keywords')
-            search = re.compile(keywords, re.I)
+            keywords = request.args.get('keywords').lower().replace(' ','+')
+            st = "tweet Like '%"
+            keywords = keywords.replace('+', "%' AND " + st)
+            keywords = keywords.replace('|', "%' OR " + st)
+            qry += " AND (" + st + keywords + "%')"            
         else:
             keywords = ""
-            search = ""
-
-        if request.args.get('fields'):
-            fields = request.args.get('fields')
-        else:
-            fields = 'id_str,text,collection_type,created_at,collected_at,user.id,user.screen_name,user.geo_enabled,user.location,geo.coordinates,geo.coordinates,place.full_name,place.country'
         
-        signature = '/home/ubuntu/.cache/grebe/'+hashlib.sha1(str(start)+str(end)+province+keywords+fields).hexdigest()+'.p'
+        signature = HOME_DIR+hashlib.sha1(str(start)+str(end)+province+keywords+fields).hexdigest()+'.p'
         if os.path.isfile(signature):
             out = pickle.load(open(signature, "rb" ))
         else:
-            fields = dict([(k, True) for k in fields.split(',')])
-            fields['_id'] = False    
+            cursor.execute(qry)
+            tweets = list(cursor)
             
-            client = MongoClient()
-            tweets = client.grebe.tweets.find({"text": {'$regex': search}, "place.full_name": {'$regex': prov}, 'coordinates.coordinates': {'$exists': True}, 'created_at': {'$gte': str(start), '$lte': str(end)}}, projection=fields).batch_size(BATCH_SIZE)
-
-            out = '[' 
+            out = '[\n'
             for tweet in tweets:
-                out += str(json.dumps(tweet))+',\n'
-            out = out[:-2]
-            out += ']'
+                i = 0
+                out += "\t{\n"
+                for field in fields.split(','):
+                    text = tweet[i]
+                    if text == None:
+                        text = ""
+                    out += '\t\t"' + field.strip() + '":"' + str(text) + '",\n'
+                    i += 1
+                out = out[:-2] + "\n\t},\n"
+            out = out[:-2]+'\n'
             pickle.dump(out, open(signature, "wb"))
-
-        generator = (cell for row in out for cell in row)
-        return Response(generator, mimetype="text/plain", headers={"Content-Disposition":"attachment;filename="+out_file+".json"})
+        
+        if request.args.get('download'):
+            if request.args.get('download') == '1':
+                generator = (cell for row in out for cell in row)
+                return Response(generator, mimetype="text/plain", headers={"Content-Disposition":"attachment;filename="+out_file+".json"})
+            else:
+                return out
+        else:
+            return out
+        
     except Exception as e:
         return 'Error: ' + str(e)
 

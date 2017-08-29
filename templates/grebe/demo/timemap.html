@@ -57,14 +57,14 @@
                     items: [
 						{% for tweet in tweets %}
     					{
-	                    	"start" : "{{ tweet.created_at }}",
+	                    	"start" : "{{ tweet[3] }}",
 	                      	"point" : {
-	                        	"lat" : {{ tweet.coordinates.coordinates[1] }},
-	                          	"lon" : {{ tweet.coordinates.coordinates[0] }}
+	                          	"lon" : {{ tweet[1] }},
+	                        	"lat" : {{ tweet[2] }}
 	                       	},
-	                      	"title" : "@{{ tweet.user.screen_name }}",
+	                      	"title" : "@{{ tweet[4] }}",
 	                      	"options" : {
-	                        	"infoHtml": "<div>{{ tweet.text.replace('\n','').encode('punycode') }}</div>",
+	                        	"infoHtml": "<div>{{ tweet[0] }}</div>",
 	                        	"theme": "blue"
 	                      	}
 	                    },
