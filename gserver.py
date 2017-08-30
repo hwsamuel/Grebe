@@ -1,17 +1,15 @@
-from flask import Flask, render_template, request, Response, url_for, jsonify
+from flask import Flask, render_template, request, Response, url_for
 from flask_httpauth import HTTPBasicAuth
-from bson.json_util import dumps
-from datetime import datetime, timedelta
-import json, math, re, operator, pickle, os.path, time, hashlib
+from datetime import datetime
+import re, operator, pickle, os.path, time, hashlib
 
 from province import Province, Provinces
-from gexport import *
-from gstats import *
 from registered import *
 
 MAX_DATE_RANGE = 30
 BATCH_SIZE = 100000
-HOME_DIR = '/home/ubuntu/.cache/grebe/' #'F:/PhD/Grebe/source/.cache/grebe/'
+HOME_DIR = '/home/ubuntu/.cache/grebe/' 
+#HOME_DIR = 'F:/PhD/Grebe/source/.cache/grebe/'
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -23,29 +21,8 @@ def demo_data():
         creation_time = os.path.getctime(demo_cache)
         if (time.time() - creation_time) // (24 * 3600) < MAX_DATE_RANGE:
             return pickle.load(open(demo_cache, "rb" ))
-    
-    num_dates = MAX_DATE_RANGE
-    base = base = datetime.now() #datetime.strptime('26-7-2016','%d-%m-%Y')
-    tweets = []
-    end_date = None
-    start_date = None
-    for i in range(0,num_dates):
-        start = (base - timedelta(days=2+i)).strftime("%d-%m-%Y")
-        end = (base - timedelta(days=1+i)).strftime("%d-%m-%Y")
-        start_date = start
-        end_date = end if end_date == None else end_date
-        tweets += demo_tweets(start,end, 2)
-    
-    pickle.dump(tweets, open(demo_cache, "wb"))
-    return tweets
-
-def demo_tweets(start, end, partition = 5):
-    ab_tweets = get_tweets(start=start,end=end,province=Provinces.AB)
-    bc_tweets = get_tweets(start=start,end=end,province=Provinces.BC)
-    sk_tweets = get_tweets(start=start,end=end,province=Provinces.SK)
-    mb_tweets = get_tweets(start=start,end=end,province=Provinces.MB)
-
-    return ab_tweets[:partition] + bc_tweets[:partition] + sk_tweets[:partition] + mb_tweets[:partition]
+    else:
+        return None
 
 def top_words():
     demo_tweets = demo_data()
@@ -69,23 +46,14 @@ def top_words():
 
 @app.route('/grebe/')
 def grebe():
+    counts = None
     stats_cache = HOME_DIR + "stats.p"
     if os.path.isfile(stats_cache):
         creation_time = os.path.getctime(stats_cache)
         if (time.time() - creation_time) // (24 * 3600) < 7: # Weekly updates
             counts = pickle.load(open(stats_cache, "rb" ))
-            return render_template('grebe/index.html',active='index',counts=counts)
-    
-    num_tweets = all_tweets()
-    coord_tweets = tweets_with_coordinates()
-    ab_tweets = tweets_in_province(Provinces.AB)
-    sk_tweets = tweets_in_province(Provinces.SK)
-    bc_tweets = tweets_in_province(Provinces.BC)
-    mb_tweets = tweets_in_province(Provinces.MB)
-    counts = [num_tweets,coord_tweets,ab_tweets,sk_tweets,bc_tweets,mb_tweets]
-    pickle.dump(counts, open(stats_cache, "wb"))
     return render_template('grebe/index.html',active='index',counts=counts)
-
+    
 @app.route('/grebe/about/')
 def about():
     return render_template('grebe/about.html',active='about')
@@ -189,7 +157,6 @@ def graph_demo():
                 cd = str(tweet[3]).split()[0]
                 if date != cd:
                     continue
-                print 'here'
                 txt = tweet[0].encode('punycode')
                 if re.search(k, txt, re.IGNORECASE):
                     count += 1
