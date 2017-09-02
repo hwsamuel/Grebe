@@ -26,7 +26,7 @@ def get_tweets(start = None, end = None, keywords = None, fields = None, provinc
         raise Exception('The end date is before the start date')
     
     if strict:
-        strict_filter = "longitude Is Not Null AND latitude Is Not Null AND "
+        strict_filter = "longitude Is Not Null AND latitude Is Not Null AND country_code = 'CA' AND "
     else:
         strict_filter = ""
     qry = "SELECT " + fields + " FROM tweets WHERE " + strict_filter + " created_at >= '" + str(start) + "' AND created_at <= '" + str(end) + "'"
