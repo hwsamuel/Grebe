@@ -20,7 +20,8 @@ def demo_tweets(start, end, partition = 5):
 def demo_data():
     demo_cache = HOME_DIR + "demo_data.p"
     num_dates = MAX_DATE_RANGE
-    base = base = datetime.now() #datetime.strptime('26-7-2016','%d-%m-%Y')
+    base = datetime.now()
+    #base = datetime.strptime('26-7-2016','%d-%m-%Y')
     tweets = []
     end_date = None
     start_date = None
