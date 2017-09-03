@@ -7,7 +7,6 @@ from province import Province, Provinces
 from registered import *
 
 MAX_DATE_RANGE = 30
-BATCH_SIZE = 100000
 HOME_DIR = '/home/ubuntu/.cache/grebe/' 
 #HOME_DIR = 'F:/PhD/Grebe/source/.cache/grebe/'
 
@@ -42,7 +41,11 @@ def top_words():
             else:
                 dict[t] = 1
     dict = {k:v for k,v in dict.items() if v > 1}
-    return sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:8]
+    tw = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:8]
+    ret = []
+    for k,v in tw:
+        ret.append(k)
+    return ret
 
 @app.route('/grebe/')
 def grebe():
@@ -108,7 +111,7 @@ def timemap_demo():
 @app.route('/grebe/graph/demo/')
 def graph_demo():
     demo_tweets = demo_data()
-    dates = [d[4] for d in demo_tweets]
+    dates = [d[3] for d in demo_tweets]
     unique_dates = list(set(dates))
     
     if request.args.get('word'):
@@ -140,10 +143,13 @@ def graph_demo():
     else:
         sel_prov = ""
 
-    tw = top_words()
+    if request.args.get('word'):
+        tw = [request.args.get('word')]
+    else:
+        tw = top_words()
     
     header = 'Date,'
-    for k,v in tw:
+    for k in tw:
         header += k + ','
     header = header [:-1]
             
@@ -151,7 +157,7 @@ def graph_demo():
     for date in unique_dates:
         date = str(date).split()[0]
         stats += date + ','
-        for k,v in tw:
+        for k in tw:
             count = 0
             for tweet in sel_tweets:
                 cd = str(tweet[3]).split()[0]

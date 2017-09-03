@@ -39,6 +39,20 @@
     .btn-sm {
         color: #000;
     }
+    #timelineMarker {
+        display: inline-block; 
+        position: absolute; 
+        z-index: 999;
+        background: #333;
+        height: 100px; 
+        width: 200px; 
+        left: 50%;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
+        filter: alpha(opacity=25);
+        -moz-opacity: 0.25;
+        -khtml-opacity: 0.25;
+        opacity: 0.25;
+    }
 	</style>
 	
 	<script type="text/javascript">
@@ -73,11 +87,11 @@
                 }
             }],
             bandInfo: [ 
-	            { 
-	               width: "100%", 
-	               intervalUnit: Timeline.DateTime.DAY,
-	               intervalPixels: 210 
-	            } 
+	            {
+                    width: "80%", 
+                    intervalUnit: Timeline.DateTime.DAY,
+                    intervalPixels: 210
+	            }
             ], 
 	    });
 	});
@@ -86,7 +100,7 @@
 
 {% block body %}
 <div class="well">
-Here's an interactive visualization of our live dataset sample on a combined map and timeline. Clickable top keywords are also displayed to demo search capability.
+Here's an interactive visualization of our live dataset sample on a combined map and timeline. Clickable top keywords are also displayed to demo search capability. Scroll the timeline using your mouse from left to right to see temporal changes on the map.
 </div>
 
 {% if top_words %}
@@ -94,7 +108,7 @@ Here's an interactive visualization of our live dataset sample on a combined map
 <form method="GET" action="{{ base_url }}/grebe/timemap/demo/" class="form-inline">
 <input type="text" name="word" value="{% if custom != None %}{{ selw }}{% endif %}" class="form-control" placeholder="Search for custom word" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" />
 <input type="hidden" name="custom" />
-{% for k,v in top_words %}
+{% for k in top_words %}
     {% if k == selw %}
         <a href="{{ base_url }}/grebe/timemap/demo?word={{ k }}" class="btn btn-sm btn-success">{{ k }}</a>
     {% else %}
@@ -108,10 +122,11 @@ Here's an interactive visualization of our live dataset sample on a combined map
 
 <div id="timemap">
     <div id="timelinecontainer">
-      <div id="timeline" style="overflow-x:hidden; overflow-y:scroll;"></div>
+        <div id="timelineMarker"></div>
+        <div id="timeline" style="overflow-x:hidden; overflow-y:scroll;"></div>
     </div>
     <div id="mapcontainer">
-      <div id="map"></div>
+        <div id="map"></div>
     </div>
 </div>
 {% endblock %}
