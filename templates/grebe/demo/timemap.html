@@ -62,9 +62,9 @@
 	                          	"lon" : {{ tweet[1] }},
 	                        	"lat" : {{ tweet[2] }}
 	                       	},
-	                      	"title" : "@{{ tweet[4] }}",
+	                      	"title" : "@{{ tweet[4].split(',')[0] }}",
 	                      	"options" : {
-	                        	"infoHtml": "<div>{{ tweet[0] }}</div>",
+	                        	"infoHtml": "<div>@{{ tweet[5] }}<br />\"{{ tweet[0] }}\"</div>",
 	                        	"theme": "blue"
 	                      	}
 	                    },

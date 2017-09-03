@@ -108,7 +108,7 @@ def timemap_demo():
 @app.route('/grebe/graph/demo/')
 def graph_demo():
     demo_tweets = demo_data()
-    dates = [d[3] for d in demo_tweets]
+    dates = [d[4] for d in demo_tweets]
     unique_dates = list(set(dates))
     
     if request.args.get('word'):
