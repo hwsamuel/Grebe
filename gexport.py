@@ -9,7 +9,7 @@ EPOCH = '2016-07-14'
 
 def get_tweets(start = None, end = None, keywords = None, fields = None, province = None, strict = True):
     if fields == None:
-        fields = 'tweet, longitude, latitude, created_at, place_name'
+        fields = 'tweet, longitude, latitude, created_at, place_name, user_name'
     
     if start == None:
         start = datetime.strptime(EPOCH, '%Y-%m-%d')
