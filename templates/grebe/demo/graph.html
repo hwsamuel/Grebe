@@ -20,7 +20,7 @@
     <form method="GET" action="{{ base_url }}/grebe/graph/demo/" class="form-inline">
     <input type="text" name="word" value="{% if custom != None %}{{ selw }}{% endif %}" class="form-control" placeholder="Search for custom word" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" />
     <input type="hidden" name="custom" />
-    {% for k,v in top_words %}
+    {% for k in top_words %}
         {% if k == selw %}
             <a href="{{ base_url }}/grebe/graph/demo?word={{ k }}" class="btn btn-sm btn-success">{{ k }}</a>
         {% else %}
