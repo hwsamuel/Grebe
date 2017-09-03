@@ -64,7 +64,7 @@
 	                       	},
 	                      	"title" : "{{ tweet[4].split(',')[0] }}",
 	                      	"options" : {
-	                        	"infoHtml": "<div>@{{ tweet[5] }}<br />\"{{ tweet[0] }}\"</div>",
+	                        	"infoHtml": "<div><small>@{{ tweet[5] }} ({{ tweet[4].strip() }})</small><br />\"{{ tweet[0].strip() }}\"</div>",
 	                        	"theme": "blue"
 	                      	}
 	                    },
