@@ -31,9 +31,11 @@ def top_words():
     
     dict = {}
     for tweet in demo_tweets:
-        tokens = re.compile("[^a-zA-Z0-9']").split(tweet[0])
+        tokens = re.compile("[^a-zA-Z0-9'#]").split(tweet[0])
         for t in tokens:
             t = t.lower().strip()
+            if '#' not in t:
+                continue
             if t in stop_words or len(t) < 2:
                 continue
             if t in dict:
@@ -41,7 +43,7 @@ def top_words():
             else:
                 dict[t] = 1
     dict = {k:v for k,v in dict.items() if v > 1}
-    tw = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:8]
+    tw = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:5]
     ret = []
     for k,v in tw:
         ret.append(k)
@@ -91,8 +93,8 @@ def json_demo():
 @app.route('/grebe/timemap/demo/')
 def timemap_demo():
     demo_tweets = demo_data()
-    if request.args.get('word'):
-        filter_word = request.args.get('word').strip()
+    if request.args.get('hash'):
+        filter_word = '#'+request.args.get('hash').replace('#','').strip()
         
         sel_tweets = []
         for tweet in demo_tweets:
@@ -114,8 +116,8 @@ def graph_demo():
     dates = [d[3] for d in demo_tweets]
     unique_dates = list(set(dates))
     
-    if request.args.get('word'):
-        filter_word = request.args.get('word').strip()
+    if request.args.get('hash'):
+        filter_word = '#'+request.args.get('hash').replace('#','').strip()
         
         sel_tweets = []
         for tweet in demo_tweets:
@@ -143,8 +145,8 @@ def graph_demo():
     else:
         sel_prov = ""
 
-    if request.args.get('word'):
-        tw = [request.args.get('word')]
+    if request.args.get('hash'):
+        tw = ['#'+request.args.get('hash').replace('#','').strip()]
     else:
         tw = top_words()
     
