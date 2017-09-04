@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, Response, url_for
 from flask_httpauth import HTTPBasicAuth
 from datetime import datetime
-import re, operator, pickle, os.path, time, hashlib
+import re, pickle, os.path, time, hashlib
 
 from province import Province, Provinces
 from registered import *
 
 MAX_DATE_RANGE = 30
-HOME_DIR = '/home/ubuntu/.cache/grebe/' 
+HOME_DIR = '/home/ubuntu/.cache/grebe/'
 #HOME_DIR = 'F:/PhD/Grebe/source/.cache/grebe/'
 
 app = Flask(__name__)
@@ -17,46 +17,25 @@ out_file = None
 def demo_data():
     demo_cache = HOME_DIR + "demo_data.p"
     if os.path.isfile(demo_cache):
-        creation_time = os.path.getctime(demo_cache)
-        if (time.time() - creation_time) // (24 * 3600) < MAX_DATE_RANGE:
-            return pickle.load(open(demo_cache, "rb" ))
+        return pickle.load(open(demo_cache, "rb" ))
     else:
         return None
 
-def top_words():
-    demo_tweets = demo_data()
-    
-    f = open("glasgow")
-    stop_words = [l.strip() for l in f.readlines()]
-    
-    dict = {}
-    for tweet in demo_tweets:
-        tokens = re.compile("[^a-zA-Z0-9'#]").split(tweet[0])
-        for t in tokens:
-            t = t.lower().strip()
-            if '#' not in t:
-                continue
-            if t in stop_words or len(t) < 2:
-                continue
-            if t in dict:
-                dict[t] += 1
-            else:
-                dict[t] = 1
-    dict = {k:v for k,v in dict.items() if v > 1}
-    tw = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:5]
-    ret = []
-    for k,v in tw:
-        ret.append(k)
-    return ret
+def top_tags():
+    top_cache = HOME_DIR + "top_tags.p"
+    if os.path.isfile(top_cache):
+        return pickle.load(open(top_cache, "rb" ))[:5]
+    else:
+        return []
 
 @app.route('/grebe/')
 def grebe():
-    counts = None
     stats_cache = HOME_DIR + "stats.p"
     if os.path.isfile(stats_cache):
-        creation_time = os.path.getctime(stats_cache)
-        if (time.time() - creation_time) // (24 * 3600) < 7: # Weekly updates
-            counts = pickle.load(open(stats_cache, "rb" ))
+        counts = pickle.load(open(stats_cache, "rb" ))
+    else:
+        counts = None
+
     return render_template('grebe/index.html',active='index',counts=counts)
     
 @app.route('/grebe/about/')
@@ -107,7 +86,7 @@ def timemap_demo():
         sel_tweets = demo_tweets
         filter_word = ""
     
-    tw = top_words()
+    tw = top_tags()
     return render_template('grebe/demo/timemap.html',active='timemap',tweets=sel_tweets,top_words=tw,selw=filter_word,custom=request.args.get('custom'))
 
 @app.route('/grebe/graph/demo/')
@@ -148,7 +127,7 @@ def graph_demo():
     if request.args.get('hash'):
         tw = ['#'+request.args.get('hash').replace('#','').strip()]
     else:
-        tw = top_words()
+        tw = top_tags()
     
     header = 'Date,'
     for k in tw:
@@ -171,7 +150,7 @@ def graph_demo():
             stats += str(count) + ','
         stats = stats[:-1] + '\\n'
     
-    tw = top_words()
+    tw = top_tags()
     return render_template('grebe/demo/graph.html',active='graph',stats=stats,header=header,top_words=tw,selw=filter_word,sel_prov=sel_prov)
     
 @app.route("/grebe/api/", methods=['GET'])

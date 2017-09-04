@@ -106,7 +106,7 @@ Here's an interactive visualization of our live dataset sample on a combined map
 {% if top_words %}
 <p>
 <form method="GET" action="{{ base_url }}/grebe/timemap/demo/" class="form-inline">
-# <input type="text" name="hash" value="{% if custom != None %}{{ selw.replace('#', '') }}{% endif %}" class="form-control" placeholder="Custom hashtag" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" />
+# <input type="text" name="hash" value="{% if custom != None %}{{ selw.replace('#','') }}{% endif %}" class="form-control" placeholder="Custom hashtag" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" />
 <input type="hidden" name="custom" />
 {% for k in top_words %}
     {% if k == selw %}
