@@ -18,22 +18,24 @@
     {% if top_words %}
     <p>
     <form method="GET" action="{{ base_url }}/grebe/graph/demo/" class="form-inline">
-    <input type="text" name="word" value="{% if custom != None %}{{ selw }}{% endif %}" class="form-control" placeholder="Search for custom word" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" />
+    # <input type="text" name="hash" value="{% if custom != None %}{{ selw.replace('#','') }}{% endif %}" class="form-control" placeholder="Custom hashtag" onkeydown="if (event.keyCode == 13) { this.form.submit(); return false; }" />
     <input type="hidden" name="custom" />
     {% for k in top_words %}
         {% if k == selw %}
-            <a href="{{ base_url }}/grebe/graph/demo?word={{ k }}" class="btn btn-sm btn-success">{{ k }}</a>
+            <a href="{{ base_url }}/grebe/graph/demo?hash={{ k.replace('#','') }}" class="btn btn-sm btn-success">{{ k }}</a>
         {% else %}
-            <a href="{{ base_url }}/grebe/graph/demo?word={{ k }}" class="btn btn-sm btn-info keywords">{{ k }}</a>
+            <a href="{{ base_url }}/grebe/graph/demo?hash={{ k.replace('#','') }}" class="btn btn-sm btn-info keywords">{{ k }}</a>
         {% endif %}
     {% endfor %}
     <a href="{{ base_url }}/grebe/graph/demo" class="pull-right btn btn-sm btn-warning">Clear</a>
     <select class="form-control" name="province" onchange="this.form.submit()">
         <option value="" disabled selected>Select Province</option>
         <option {% if sel_prov == "AB" %}selected{% endif %} value="AB">Alberta</option>
+        <option {% if sel_prov == "ON" %}selected{% endif %} value="MB">Ontario</option>
         <option {% if sel_prov == "BC" %}selected{% endif %} value="BC">British Columbia</option>
         <option {% if sel_prov == "SK" %}selected{% endif %} value="SK">Saskatchewan</option>
         <option {% if sel_prov == "MB" %}selected{% endif %} value="MB">Manitoba</option>
+        <option {% if sel_prov == "QC" %}selected{% endif %} value="MB">Quebec</option>
     </select>
     </form>
     </p>
