@@ -187,7 +187,7 @@ def main():
     global mode
     global province
     
-    usage = '\nUsage: python gaggregate.py [stream | search] [ON | QC | NS | NB | MB | BC | PE | SK | AB | NL]\n'
+    usage = '\nUsage: python gaggregate.py [stream | search] [ON | QC | NS | NB | MB | BC | PE | SK | AB | NL | NU | NT | YT]\n'
     
     if len(sys.argv) != 3:
         print usage
