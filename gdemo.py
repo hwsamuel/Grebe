@@ -15,13 +15,15 @@ def demo_tweets(start, end, partition = 5):
     bc_tweets = get_tweets(start=start,end=end,province=Provinces.BC)
     sk_tweets = get_tweets(start=start,end=end,province=Provinces.SK)
     mb_tweets = get_tweets(start=start,end=end,province=Provinces.MB)
-    return ab_tweets[:partition] + bc_tweets[:partition] + sk_tweets[:partition] + mb_tweets[:partition]
+    on_tweets = get_tweets(start=start,end=end,province=Provinces.ON)
+    qc_tweets = get_tweets(start=start,end=end,province=Provinces.QC)
+    return ab_tweets[:partition] + bc_tweets[:partition] + sk_tweets[:partition] + mb_tweets[:partition] + on_tweets[:partition] + qc_tweets[:partition]
 
 def demo_data():
     demo_cache = HOME_DIR + "demo_data.p"
     num_dates = MAX_DATE_RANGE
-    base = datetime.now()
-    #base = datetime.strptime('26-7-2016','%d-%m-%Y')
+    #base = datetime.now()
+    base = datetime.strptime('26-7-2016','%d-%m-%Y')
     tweets = []
     end_date = None
     start_date = None
@@ -41,7 +43,9 @@ def demo_stats():
     sk_tweets = tweets_in_province(Provinces.SK)
     bc_tweets = tweets_in_province(Provinces.BC)
     mb_tweets = tweets_in_province(Provinces.MB)
-    counts = [num_tweets,coord_tweets,ab_tweets,sk_tweets,bc_tweets,mb_tweets]
+    on_tweets = tweets_in_province(Provinces.ON)
+    qc_tweets = tweets_in_province(Provinces.QC)
+    counts = [num_tweets,coord_tweets,ab_tweets,sk_tweets,bc_tweets,mb_tweets,on_tweets,qc_tweets]
     pickle.dump(counts, open(stats_cache, "wb"))
     
 if __name__ == "__main__":
