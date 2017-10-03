@@ -8,7 +8,7 @@ def clean(str):
         return str.encode('punycode')[:-1].replace('\n', ' ')
     
 mariadb_connection = mariadb.connect(user='root', password='', database='grebe')
-cursor = mariadb_connection.cursor(buffered=True)
+cursor = mariadb_connection.cursor()
 
 client = MongoClient()
 table = client.grebe.tweets.find().batch_size(100000)
