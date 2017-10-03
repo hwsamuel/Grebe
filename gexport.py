@@ -3,7 +3,7 @@ from province import Province, Provinces
 import time, mysql.connector as mariadb
 
 mariadb_connection = mariadb.connect(user='root', password='', database='grebe')
-cursor = mariadb_connection.cursor(buffered=True)
+cursor = mariadb_connection.cursor()
 
 EPOCH = '2016-07-14'
 
