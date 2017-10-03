@@ -2,7 +2,7 @@ from province import Province, Provinces
 import mysql.connector as mariadb
 
 mariadb_connection = mariadb.connect(user='root', password='', database='grebe')
-cursor = mariadb_connection.cursor(buffered=True)
+cursor = mariadb_connection.cursor()
 
 def all_tweets():
     cursor.execute("SELECT Count(id) FROM tweets")

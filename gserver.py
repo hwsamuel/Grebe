@@ -35,8 +35,8 @@ def grebe():
         counts = pickle.load(open(stats_cache, "rb" ))
     else:
         counts = None
-
-    return render_template('grebe/index.html',active='index',counts=counts)
+    unistat = str(counts[0])[:-6]
+    return render_template('grebe/index.html',active='index',counts=counts,unistat=unistat)
     
 @app.route('/grebe/about/')
 def about():
@@ -201,6 +201,9 @@ def api():
         if os.path.isfile(signature):
             out = pickle.load(open(signature, "rb" ))
         else:
+            import mysql.connector as mariadb
+            mariadb_connection = mariadb.connect(user='root', password='', database='grebe')
+            cursor = mariadb_connection.cursor()
             cursor.execute(qry)
             tweets = list(cursor)
             
@@ -209,7 +212,7 @@ def api():
                 i = 0
                 out += "\t{\n"
                 for field in fields.split(','):
-                    text = tweet[i]
+                    text = tweet[i] 
                     if text == None:
                         text = ""
                     out += '\t\t"' + field.strip() + '":"' + str(text) + '",\n'

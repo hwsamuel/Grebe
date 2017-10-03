@@ -12,3 +12,4 @@ templates/cardea/*
 templates/index.html
 binclay.py
 ConTextConv.py
+deletedups.py

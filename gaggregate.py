@@ -13,7 +13,6 @@ mode = None
 province = None
 RATE_LIMIT = 15*60
 mariadb_connection = mariadb.connect(user='root', password='', database='grebe')
-cursor = mariadb_connection.cursor(buffered=True)
 
 class Stream(tweepy.StreamListener):
     def __init__(self):
@@ -165,13 +164,16 @@ def save(data):
         longitude = None
         latitude  = None
         
-    cursor.execute("SELECT id FROM tweets WHERE tweet_hash = %s", (tweet_hash,))
-    if cursor.fetchone():
-        return
+    cursor = mariadb_connection.cursor()
+    cursor.execute("SELECT Count(id) FROM tweets WHERE tweet_hash = %s", (tweet_hash,))
+    if cursor.fetchone()[0] == 0:
+        try:
+            cursor.execute("INSERT INTO tweets(id,tweet,tweet_hash,longitude,latitude,created_at,collected_at,collection_type,lang,place_name,country_code,cronjob_tag,user_id,user_name,user_geoenabled,user_lang,user_location,user_timezone,user_verified) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (id,tweet,tweet_hash,longitude,latitude,created_at,collected_at,collection_type,lang,place_name,country_code,cronjob_tag,user_id,user_name,user_geoenabled,user_lang,user_location,user_timezone,user_verified))
+            mariadb_connection.commit()
+        except mariadb.IntegrityError as msie:
+            return
     else:
-        cursor.execute("INSERT INTO tweets(id,tweet,tweet_hash,longitude,latitude,created_at,collected_at,collection_type,lang,place_name,country_code,cronjob_tag,user_id,user_name,user_geoenabled,user_lang,user_location,user_timezone,user_verified) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (id,tweet,tweet_hash,longitude,latitude,created_at,collected_at,collection_type,lang,place_name,country_code,cronjob_tag,user_id,user_name,user_geoenabled,user_lang,user_location,user_timezone,user_verified))
-    
-        mariadb_connection.commit()
+        return
 
 def api(province):
     CONSUMER_KEY = AuthKeys[province.name].value.consumer_key
