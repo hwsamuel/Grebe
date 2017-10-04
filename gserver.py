@@ -6,6 +6,10 @@ import re, pickle, os.path, time, hashlib
 from province import Province, Provinces
 from registered import *
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 MAX_DATE_RANGE = 30
 HOME_DIR = '/home/ubuntu/.cache/grebe/'
 #HOME_DIR = 'F:/PhD/Grebe/source/.cache/grebe/'
