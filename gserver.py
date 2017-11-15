@@ -12,7 +12,7 @@ sys.setdefaultencoding('utf-8')
 
 MAX_DATE_RANGE = 30
 HOME_DIR = '/home/ubuntu/.cache/grebe/'
-#HOME_DIR = 'F:/PhD/Grebe/source/.cache/grebe/'
+#HOME_DIR = '/home/hamman/PhD/Grebe/source/.cache/grebe/'
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -32,14 +32,36 @@ def top_tags():
     else:
         return []
 
+@app.route('/ironmask/')
+def ironmask():
+    return render_template('ironmask/index.html')
+
+@app.route('/pubmedreco/')
+def pubmedreco():
+    return render_template('pubmedreco/index.html')
+
+@app.route('/medfact/')
+def medfact():
+    return render_template('medfact/index.html')
+    
+@app.route('/deepdup/')
+def deepdup():
+    return render_template('deepdup/index.html')
+    
+@app.route('/autofaq/')
+def autofaq():
+    return render_template('autofaq/index.html')
+
 @app.route('/grebe/')
 def grebe():
     stats_cache = HOME_DIR + "stats.p"
     if os.path.isfile(stats_cache):
         counts = pickle.load(open(stats_cache, "rb" ))
+        unistat = str(counts[0])[:-6]
     else:
-        counts = None
-    unistat = str(counts[0])[:-6]
+        counts = 0
+        unistat = 0
+    
     return render_template('grebe/index.html',active='index',counts=counts,unistat=unistat)
     
 @app.route('/grebe/about/')
@@ -96,7 +118,10 @@ def timemap_demo():
 @app.route('/grebe/graph/demo/')
 def graph_demo():
     demo_tweets = demo_data()
-    dates = [d[3] for d in demo_tweets]
+    if demo_tweets: 
+        dates = [d[3] for d in demo_tweets]
+    else:
+        dates = []
     unique_dates = list(set(dates))
     
     if request.args.get('hash'):
