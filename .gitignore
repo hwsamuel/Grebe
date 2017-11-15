@@ -13,3 +13,10 @@ templates/index.html
 binclay.py
 ConTextConv.py
 deletedups.py
+static/css/bootstrap-multiselect.css
+static/js/bootstrap-multiselect.js
+templates/autofaq/
+templates/deepdup/
+templates/ironmask/
+templates/medfact/
+templates/pubmedreco/

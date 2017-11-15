@@ -7,7 +7,7 @@ from gstats import *
 import sys, pickle, os.path, re, operator
 
 HOME_DIR = '/home/ubuntu/.cache/grebe/' 
-#HOME_DIR = 'F:/PhD/Grebe/source/.cache/grebe/'
+#HOME_DIR = '/home/hamman/Documents/PhD/Grebe/source/.cache/grebe/'
 MAX_DATE_RANGE = 30
 
 def demo_tweets(start, end, partition = 5):

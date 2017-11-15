@@ -69,6 +69,7 @@
                 type: "basic",
                 options: {
                     items: [
+						{% if tweets %}
 						{% for tweet in tweets %}
     					{
 	                    	"start" : "{{ tweet[3] }}",
@@ -83,6 +84,7 @@
 	                      	}
 	                    },
                     	{% endfor %}
+						{% endif %}
                     ]
                 }
             }],
