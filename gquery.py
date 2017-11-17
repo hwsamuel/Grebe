@@ -37,11 +37,31 @@ def main(out_file, tweets, fields = None):
     f.write(out)
     f.close()
 
-#tweets = get_tweets(province=Provinces.AB)
-#main(out_file='victor.json', tweets=tweets)
+def tsv(out_file, tweets, fields = None):
+    if fields == None:
+        fields = 'tweet, longitude, latitude, created_at, place_name'
+    
+    out = fields.replace(',', '\t')+'\n'
+    for tweet in tweets:
+        i = 0
+        for field in fields.split(','):
+            text = tweet[i]
+            if text == None:
+                text = ""
+            else:
+                text = clean(text)
+            out += text + '\t'
+            i += 1
+        out = out[:-1] + '\n'
 
-#tweets = get_tweets(start='15-04-2017',province=Provinces.AB)
-#main(out_file='esha.json', tweets=tweets)
+    if len(out.strip()) == 0:
+        return
 
-tweets = get_tweets(keywords="hate myself|no hope|kill myself|fuck myself|destroy myself|hopeless|hopelessness|i am a burden|this is the end")
-main(out_file='nawshad.json', tweets=tweets)
+    f = open(out_file,'w')
+    f.write(out)
+    f.close()
+
+fields = "user_id, id, created_at, tweet"
+
+tweets = get_tweets(keywords="#depressed", fields=fields, strict=False)
+tsv(out_file='exports/depression.tsv', fields=fields, tweets=tweets)
