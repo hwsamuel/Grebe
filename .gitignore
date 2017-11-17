@@ -20,3 +20,4 @@ templates/deepdup/
 templates/ironmask/
 templates/medfact/
 templates/pubmedreco/
+exports/*
