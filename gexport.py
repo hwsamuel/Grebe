@@ -19,6 +19,7 @@ def get_tweets(start = None, end = None, keywords = None, fields = None, provinc
     if end == None:
         today = time.strftime("%Y-%m-%d")
         end = datetime.strptime(today, '%Y-%m-%d')
+        end += timedelta(days=1)
     else:
         end = datetime.strptime(end, '%d-%m-%Y')
 
