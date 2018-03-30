@@ -1,6 +1,6 @@
 CREATE DATABASE grebe;
 
-USE DATABASE grebe;
+USE grebe;
 
 CREATE TABLE tweets (
   id VARCHAR(255) NOT NULL,
