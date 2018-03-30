@@ -43,11 +43,11 @@ def pubmedreco():
 @app.route('/medfact/')
 def medfact():
     return render_template('medfact/index.html')
-    
+
 @app.route('/deepdup/')
 def deepdup():
     return render_template('deepdup/index.html')
-    
+
 @app.route('/autofaq/')
 def autofaq():
     return render_template('autofaq/index.html')
@@ -61,9 +61,9 @@ def grebe():
     else:
         counts = 0
         unistat = 0
-    
+
     return render_template('grebe/index.html',active='index',counts=counts,unistat=unistat)
-    
+
 @app.route('/grebe/about/')
 def about():
     return render_template('grebe/about.html',active='about')
@@ -88,7 +88,7 @@ def json_demo():
             i += 1
         out = out[:-2] + "\n\t},\n"
     out = out[:-2]+'\n'
-    
+
     if len(out.strip()) == 0:
         return ""
     else:
@@ -100,7 +100,7 @@ def timemap_demo():
     demo_tweets = demo_data()
     if request.args.get('hash'):
         filter_word = '#'+request.args.get('hash').replace('#','').strip()
-        
+
         sel_tweets = []
         for tweet in demo_tweets:
             txt = tweet[0].encode('punycode')
@@ -111,22 +111,22 @@ def timemap_demo():
     else:
         sel_tweets = demo_tweets
         filter_word = ""
-    
+
     tw = top_tags()
     return render_template('grebe/demo/timemap.html',active='timemap',tweets=sel_tweets,top_words=tw,selw=filter_word,custom=request.args.get('custom'))
 
 @app.route('/grebe/graph/demo/')
 def graph_demo():
     demo_tweets = demo_data()
-    if demo_tweets: 
+    if demo_tweets:
         dates = [d[3] for d in demo_tweets]
     else:
         dates = []
     unique_dates = list(set(dates))
-    
+
     if request.args.get('hash'):
         filter_word = '#'+request.args.get('hash').replace('#','').strip()
-        
+
         sel_tweets = []
         for tweet in demo_tweets:
             txt = tweet[0].encode('punycode')
@@ -137,7 +137,7 @@ def graph_demo():
     else:
         sel_tweets = demo_tweets
         filter_word = ""
-    
+
     if request.args.get('province'):
         province = request.args.get('province').strip()
         sel_prov = province
@@ -157,12 +157,12 @@ def graph_demo():
         tw = ['#'+request.args.get('hash').replace('#','').strip()]
     else:
         tw = top_tags()
-    
+
     header = 'Date,'
     for k in tw:
         header += k + ','
     header = header [:-1]
-            
+
     stats = ''
     for date in unique_dates:
         date = str(date).split()[0]
@@ -178,20 +178,20 @@ def graph_demo():
                     count += 1
             stats += str(count) + ','
         stats = stats[:-1] + '\\n'
-    
+
     tw = top_tags()
     return render_template('grebe/demo/graph.html',active='graph',stats=stats,header=header,top_words=tw,selw=filter_word,sel_prov=sel_prov)
-    
+
 @app.route("/grebe/api/", methods=['GET'])
 @auth.login_required
 def api():
     try:
         start = request.args.get('start')
         end = request.args.get('end')
-        
+
         start = datetime.strptime(start, '%d-%m-%Y')
         end =  datetime.strptime(end, '%d-%m-%Y')
-        
+
         if end < start:
             raise Exception('The end date is before the start date')
 
@@ -203,10 +203,10 @@ def api():
             fields = request.args.get('fields')
         else:
             fields = 'tweet, longitude, latitude, created_at, place_name'
-        
+
         strict_filter = "longitude Is Not Null AND latitude Is Not Null AND "
         qry = "SELECT " + fields + " FROM tweets WHERE " + strict_filter + " created_at >= '" + str(start) + "' AND created_at <= '" + str(end) + "'"
-            
+
         if request.args.get('province'):
             province = request.args.get('province')
             if province in [p.name for p in Provinces]:
@@ -222,10 +222,10 @@ def api():
             st = "tweet Like '%"
             keywords = keywords.replace('+', "%' AND " + st)
             keywords = keywords.replace('|', "%' OR " + st)
-            qry += " AND (" + st + keywords + "%')"            
+            qry += " AND (" + st + keywords + "%')"
         else:
             keywords = ""
-        
+
         signature = HOME_DIR+hashlib.sha1(str(start)+str(end)+province+keywords+fields).hexdigest()+'.p'
         if os.path.isfile(signature):
             out = pickle.load(open(signature, "rb" ))
@@ -235,13 +235,13 @@ def api():
             cursor = mariadb_connection.cursor()
             cursor.execute(qry)
             tweets = list(cursor)
-            
+
             out = '[\n'
             for tweet in tweets:
                 i = 0
                 out += "\t{\n"
                 for field in fields.split(','):
-                    text = tweet[i] 
+                    text = tweet[i]
                     if text == None:
                         text = ""
                     out += '\t\t"' + field.strip() + '":"' + str(text) + '",\n'
@@ -249,7 +249,7 @@ def api():
                 out = out[:-2] + "\n\t},\n"
             out = out[:-2]+'\n'
             pickle.dump(out, open(signature, "wb"))
-        
+
         if request.args.get('download'):
             if request.args.get('download') == '1':
                 generator = (cell for row in out for cell in row)
@@ -258,7 +258,7 @@ def api():
                 return out
         else:
             return out
-        
+
     except Exception as e:
         return 'Error: ' + str(e)
 
