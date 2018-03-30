@@ -21,3 +21,4 @@ templates/ironmask/
 templates/medfact/
 templates/pubmedreco/
 exports/*
+.ftpconfig

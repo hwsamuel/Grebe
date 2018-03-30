@@ -6,6 +6,12 @@
 4. In a terminal, use the command `python gserver.py` to run the Flask server
 5. In your web browser, go to [http://127.0.0.1:5000/grebe/](http://127.0.0.1:5000/grebe/)
 
+# Additional Dependencies
+
+1. Install [Tweepy](http://www.tweepy.org) via `pip install tweepy`
+2. Install PyMongo via `pip install pymongo`
+3. Install the MySQL Connector `pip install mysql-connector`
+
 # Aggregating Twitter Data in 5 Steps
 
 1. Make sure you have [Python](https://www.python.org/downloads/) and [MariaDB](https://mariadb.com/downloads) installed (run the SQL commands in `schema.sql`)
