@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 from province import Province, Provinces
-import time, mysql.connector as mariadb
+import time, mysql.connector as mariadb, pickle
 
 mariadb_connection = mariadb.connect(user='root', password='', database='grebe')
 cursor = mariadb_connection.cursor()
 
 EPOCH = '2016-07-14'
 
-def get_tweets(start = None, end = None, keywords = None, fields = None, province = None, strict = True):
+def get_tweets(start = None, end = None, keywords = None, fields = None, province = None, strict = True, pickled = None):
     if fields == None:
         fields = 'tweet, longitude, latitude, created_at, place_name, user_name'
     
@@ -43,4 +43,9 @@ def get_tweets(start = None, end = None, keywords = None, fields = None, provinc
         qry += " AND (" + st + keywords + "%')"
     
     cursor.execute(qry)
-    return list(cursor)
+    tweets = list(cursor)
+
+    if pickled is not None:
+        pickle.dump(tweets, open(pickled, "wb"))
+
+    return tweets
