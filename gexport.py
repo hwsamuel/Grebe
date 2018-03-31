@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from province import Province, Provinces
 import time, mysql.connector as mariadb
 
