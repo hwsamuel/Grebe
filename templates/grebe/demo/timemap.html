@@ -79,7 +79,7 @@
 	                       	},
 	                      	"title" : "{{ tweet[4].split(',')[0] }}",
 	                      	"options" : {
-	                        	"infoHtml": "<div><small>@{{ tweet[5] }} ({{ tweet[4].strip() }})</small><br />\"{{ tweet[0].strip() }}\"</div>",
+	                        	"infoHtml": "<div><small>{{ tweet[4].strip() }}</small><br />\"{{ tweet[0].strip() }}\"</div>",
 	                        	"theme": "blue"
 	                      	}
 	                    },
@@ -102,7 +102,8 @@
 
 {% block body %}
 <div class="well">
-Here's an interactive visualization of our live dataset sample on a combined map and timeline. Clickable top hashtags are also displayed to demo search capability. Scroll the timeline using your mouse from left to right to see temporal changes on the map.
+Here's an interactive visualization of our live dataset sample. Scroll the timeline using your mouse from left to right to see temporal changes on the map.
+<br /><br />The registered version lets you map a lot more data. Researchers can <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#104;&#119;&#115;&#097;&#109;&#117;&#101;&#108;&#064;&#117;&#097;&#108;&#098;&#101;&#114;&#116;&#097;&#046;&#099;&#097;">contact us</a> from your academic institution's email to apply for full access.
 </div>
 
 {% if top_words %}

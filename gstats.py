@@ -1,7 +1,8 @@
-from province import Province, Provinces
 import mysql.connector as mariadb
 
-mariadb_connection = mariadb.connect(user='root', password='', database='grebe')
+from config import *
+
+mariadb_connection = mariadb.connect(user=DB_USER, password=DB_PWD, database=DB_NAME)
 cursor = mariadb_connection.cursor()
 
 def all_tweets():
@@ -13,17 +14,16 @@ def tweets_with_coordinates():
     return cursor.fetchone()[0]
 
 def tweets_in_province(province):
-    cursor.execute("SELECT Count(id) FROM tweets WHERE latitude Is Not Null AND longitude Is Not Null AND place_name Like '%" + province.value.name + "'")
+    cursor.execute("SELECT Count(id) FROM tweets WHERE latitude Is Not Null AND longitude Is Not Null AND place_name Like '%" + province + "'")
     return cursor.fetchone()[0]
 
 def main():
     print 'Total Tweets: '+str(all_tweets())
     print 'Tweets with coordinates: '+str(tweets_with_coordinates())
     
-    provinces = [Provinces.AB, Provinces.ON, Provinces.SK, Provinces.BC, Provinces.MB, Provinces.QC]
-    for province in provinces:
+    for province in CANADA_PROVINCES:
         tweets = tweets_in_province(province)
-        print 'Tweets from ' + province.value.name + ': ' + str(tweets)
+        print 'Tweets from ' + province + ': ' + str(tweets)
 
 if __name__ == "__main__":
     main()
