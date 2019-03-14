@@ -14,104 +14,104 @@ auth = HTTPBasicAuth()
 out_file = None
 
 def demo_data():
-    demo_cache = HOME_DIR + "demo_data.p"
-    if os.path.isfile(demo_cache):
-        return pickle.load(open(demo_cache, "rb" ))
-    else:
-        return None
+	demo_cache = HOME_DIR + "demo_data.p"
+	if os.path.isfile(demo_cache):
+		return pickle.load(open(demo_cache, "rb" ))
+	else:
+		return None
 
 def top_tags():
-    top_cache = HOME_DIR + "top_tags.p"
-    if os.path.isfile(top_cache):
-        return pickle.load(open(top_cache, "rb" ))[:5]
-    else:
-        return []
+	top_cache = HOME_DIR + "top_tags.p"
+	if os.path.isfile(top_cache):
+		return pickle.load(open(top_cache, "rb" ))[:10]
+	else:
+		return []
 
 @app.route('/grebe/')
 def grebe():
-    stats_cache = HOME_DIR + "stats.p"
-    if os.path.isfile(stats_cache):
-        counts = pickle.load(open(stats_cache, "rb" ))
-        unistat = str(counts[0])[:-6]
-    else:
-        counts = 0
-        unistat = 0
+	stats_cache = HOME_DIR + "stats.p"
+	if os.path.isfile(stats_cache):
+		counts = pickle.load(open(stats_cache, "rb" ))
+		unistat = str(counts[0])[:-6]
+	else:
+		counts = 0
+		unistat = 0
 
-    return render_template('grebe/index.html',active='index',counts=counts,unistat=unistat,provinces=CANADA_PROVINCES)
+	return render_template('grebe/index.html',active='index',counts=counts,unistat=unistat,provinces=CANADA_PROVINCES)
 
 @app.route('/grebe/about/')
 def about():
-    return render_template('grebe/about.html',active='about')
+	return render_template('grebe/about.html',active='about')
 
 @app.route('/grebe/api/demo/')
 def api_demo():
-    demo_tweets = demo_data()
-    return render_template('grebe/demo/api.html',active='api',tweets=demo_tweets)
+	demo_tweets = demo_data()
+	return render_template('grebe/demo/api.html',active='api',tweets=demo_tweets)
 
 @app.route('/grebe/api/demo/json/')
 def json_demo():
-    demo_tweets = demo_data()
-    fields = 'tweet, longitude, latitude, created_at, place_name'
+	demo_tweets = demo_data()
+	fields = 'tweet, longitude, latitude, created_at, place_name'
 
-    out = '[\n'
-    for tweet in demo_tweets:
-        i = 0
-        out += "\t{\n"
-        for field in fields.split(','):
-            text = str(tweet[i])
-            out += '\t\t"' + field.strip() + '":"' + text + '",\n'
-            i += 1
-        out = out[:-2] + "\n\t},\n"
-    out = out[:-2]+'\n'
+	out = '[\n'
+	for tweet in demo_tweets:
+		i = 0
+		out += "\t{\n"
+		for field in fields.split(','):
+			text = str(tweet[i])
+			out += '\t\t"' + field.strip() + '":"' + text + '",\n'
+			i += 1
+		out = out[:-2] + "\n\t},\n"
+	out = out[:-2]+'\n'
 
-    if len(out.strip()) == 0:
-        return ""
-    else:
-        out += ']'
-        return out
+	if len(out.strip()) == 0:
+		return ""
+	else:
+		out += ']'
+		return out
 
 @app.route('/grebe/timemap/demo/')
 def timemap_demo():
-    demo_tweets = demo_data()
-    if request.args.get('hash'):
-        filter_word = '#'+request.args.get('hash').replace('#','').strip()
+	demo_tweets = demo_data()
+	if request.args.get('hash'):
+		filter_word = '#'+request.args.get('hash').replace('#','').strip()
 
-        sel_tweets = []
-        for tweet in demo_tweets:
-            txt = tweet[0].encode('punycode')
-            if re.search(filter_word, txt, re.IGNORECASE):
-                sel_tweets.append(tweet)
-            else:
-                continue
-    else:
-        sel_tweets = demo_tweets
-        filter_word = ""
+		sel_tweets = []
+		for tweet in demo_tweets:
+			txt = tweet[0].encode('punycode')
+			if re.search(filter_word, txt, re.IGNORECASE):
+				sel_tweets.append(tweet)
+			else:
+				continue
+	else:
+		sel_tweets = demo_tweets
+		filter_word = ""
 
-    tw = top_tags()
-    return render_template('grebe/demo/timemap.html',active='timemap',tweets=sel_tweets,top_words=tw,selw=filter_word,custom=request.args.get('custom'))
+	tw = top_tags()
+	return render_template('grebe/demo/timemap.html',active='timemap',tweets=sel_tweets,top_words=tw,selw=filter_word,custom=request.args.get('custom'))
 
 @app.route('/grebe/graph/demo/')
 def graph_demo():
-    demo_tweets = demo_data()
-    if demo_tweets:
-        dates = [d[3] for d in demo_tweets]
-    else:
-        dates = []
-    unique_dates = list(set(dates))
+	demo_tweets = demo_data()
+	if demo_tweets:
+		dates = [d[3] for d in demo_tweets]
+	else:
+		dates = []
+	unique_dates = list(set(dates))
 
-    if request.args.get('hash'):
-        filter_word = '#'+request.args.get('hash').replace('#','').strip()
+	if request.args.get('hash'):
+		filter_word = '#'+request.args.get('hash').replace('#','').strip()
 
-        sel_tweets = []
-        for tweet in demo_tweets:
-            txt = tweet[0].encode('punycode')
-            if re.search(filter_word, txt, re.IGNORECASE):
-                sel_tweets.append(tweet)
-            else:
-                continue
-    else:
-        sel_tweets = demo_tweets
-        filter_word = ""
+		sel_tweets = []
+		for tweet in demo_tweets:
+			txt = tweet[0].encode('punycode')
+			if re.search(filter_word, txt, re.IGNORECASE):
+				sel_tweets.append(tweet)
+			else:
+				continue
+	else:
+		sel_tweets = demo_tweets
+		filter_word = ""
 
 	sel_prov = ''
 	if request.args.get('province'):
@@ -127,10 +127,11 @@ def graph_demo():
 				else:
 					continue
 
-    if request.args.get('hash'):
-        tw = ['#'+request.args.get('hash').replace('#','').strip()]
-    else:
-        tw = top_tags()
+	if request.args.get('hash'):
+		tw = ['#'+request.args.get('hash').replace('#','').strip()]
+		print tw
+	else:
+		tw = top_tags()
 
 	header = 'Date,'
 	for k in tw:
@@ -249,11 +250,11 @@ def api():
 
 @auth.get_password
 def get_pwd(username):
-    global out_file
-    out_file = username
-    if username in REGISTERED:
-        return REGISTERED.get(username)
-    return None
+	global out_file
+	out_file = username
+	if username in REGISTERED:
+		return REGISTERED.get(username)
+	return None
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',debug=True,threaded=True)
+	app.run(host='0.0.0.0',debug=True,threaded=True)
