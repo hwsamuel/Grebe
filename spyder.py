@@ -42,9 +42,9 @@ def verify(mode, iterator, strict = False):
 			elif 'disconnect' in tweet:
 				raise Exception('[%s] %s' % (mode, tweet['disconnect']['reason']))
 	except TwitterRequestError as tre:
-		print str(tre)
+		print '[%s] %s' % (mode, str(tre))
 	except TwitterConnectionError as tce:
-		print str(tce)
+		print '[%s] %s' % (mode, str(tce))
 	except mariadb.IntegrityError as msie:
 		pass
 	except Exception as e:
