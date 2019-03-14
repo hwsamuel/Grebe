@@ -1,6 +1,6 @@
-from province import Province, Provinces
 from gexport import *
 import sys
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -79,7 +79,8 @@ def format_unixtime(tweets):
 fields = "user_id, id, created_at, tweet"
 
 if __name__ == '__main__':
-	tweets = format_unixtime(get_tweets(keywords="#depressed", fields=fields, strict=False))
+	print get_tweets(province='Alberta')
+	'''tweets = format_unixtime(get_tweets(keywords="#depressed", fields=fields, strict=False))
 	tsv(out_file='exports/depression.txt', fields=fields, tweets=tweets, separator=' ', show_header=False)
 
 	tweets = format_unixtime(get_tweets(keywords="#deception", fields=fields, strict=False))
@@ -122,4 +123,4 @@ if __name__ == '__main__':
 	tsv(out_file='exports/hopeless.txt', fields=fields, tweets=tweets, separator=' ', show_header=False)
 
 	tweets = format_unixtime(get_tweets(keywords="I have been diagnosed with depression|I am diagnosed with depression|I was diagnosed with depression|Doctor diagnosed me with depression", fields=fields, strict=False))
-	tsv(out_file='exports/depressiondisclosure.txt', fields=fields, tweets=tweets, separator=' ', show_header=False)
+	tsv(out_file='exports/depressiondisclosure.txt', fields=fields, tweets=tweets, separator=' ', show_header=False)'''

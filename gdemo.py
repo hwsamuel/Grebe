@@ -1,29 +1,23 @@
 #!/usr/bin/python
 
 from datetime import datetime, timedelta
-from province import Province, Provinces
-from gexport import *
-from gstats import *
 import sys, pickle, os.path, re, operator
 
-HOME_DIR = '/home/ubuntu/.cache/grebe/' 
-#HOME_DIR = '/home/hamman/Documents/PhD/Grebe/source/.cache/grebe/'
-MAX_DATE_RANGE = 30
+from gexport import *
+from gstats import *
+from config import *
 
 def demo_tweets(start, end, partition = 5):
-    ab_tweets = get_tweets(start=start,end=end,province=Provinces.AB)
-    bc_tweets = get_tweets(start=start,end=end,province=Provinces.BC)
-    sk_tweets = get_tweets(start=start,end=end,province=Provinces.SK)
-    mb_tweets = get_tweets(start=start,end=end,province=Provinces.MB)
-    on_tweets = get_tweets(start=start,end=end,province=Provinces.ON)
-    qc_tweets = get_tweets(start=start,end=end,province=Provinces.QC)
-    return ab_tweets[:partition] + bc_tweets[:partition] + sk_tweets[:partition] + mb_tweets[:partition] + on_tweets[:partition] + qc_tweets[:partition]
+	all_tweets = []
+	for province in CANADA_PROVINCES:
+		tweets = get_tweets(start=start,end=end,province=province)[:partition]
+		all_tweets.extend(tweets)
+	return all_tweets
 
 def demo_data():
     demo_cache = HOME_DIR + "demo_data.p"
     num_dates = MAX_DATE_RANGE
-    base = datetime.now()
-    #base = datetime.strptime('26-7-2016','%d-%m-%Y')
+    base = datetime.now() # Epoch datetime.strptime('26-7-2016','%d-%m-%Y')
     tweets = []
     end_date = None
     start_date = None
@@ -36,17 +30,14 @@ def demo_data():
     pickle.dump(tweets, open(demo_cache, "wb"))
 
 def demo_stats():
-    stats_cache = HOME_DIR + "stats.p"
-    num_tweets = all_tweets()
-    coord_tweets = tweets_with_coordinates()
-    ab_tweets = tweets_in_province(Provinces.AB)
-    sk_tweets = tweets_in_province(Provinces.SK)
-    bc_tweets = tweets_in_province(Provinces.BC)
-    mb_tweets = tweets_in_province(Provinces.MB)
-    on_tweets = tweets_in_province(Provinces.ON)
-    qc_tweets = tweets_in_province(Provinces.QC)
-    counts = [num_tweets,coord_tweets,ab_tweets,sk_tweets,bc_tweets,mb_tweets,on_tweets,qc_tweets]
-    pickle.dump(counts, open(stats_cache, "wb"))
+	stats_cache = HOME_DIR + "stats.p"
+	num_tweets = all_tweets()
+	coord_tweets = tweets_with_coordinates()
+	counts = [num_tweets,coord_tweets]
+	for province in CANADA_PROVINCES:
+		tweets = tweets_in_province(province)
+		counts.append(tweets)
+	pickle.dump(counts, open(stats_cache, "wb"))
 
 def demo_tags():
     top_cache = HOME_DIR + "top_tags.p"
@@ -56,7 +47,7 @@ def demo_tags():
     else:
         return
 
-    f = open("glasgow")
+    f = open(STOPWORDS_FILE)
     stop_words = [l.strip() for l in f.readlines()]
     
     dict = {}
@@ -64,7 +55,7 @@ def demo_tags():
         tokens = re.compile("[^a-zA-Z0-9'#]").split(tweet[0])
         for t in tokens:
             t = t.lower().strip()
-            if '#' not in t:
+            if '#' not in t and '%23' not in t:
                 continue
             if t in stop_words or len(t) <= 2:
                 continue

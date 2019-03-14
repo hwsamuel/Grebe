@@ -15,7 +15,7 @@
                 
                 <table class="table">
                 <tbody>
-                <tr>
+				<tr>
                     <td>Total Tweets</td>
                     <td>{{ counts[0] }}</td>
                 </tr>
@@ -23,30 +23,13 @@
                     <td>Tweets with Coordinates</td>
                     <td>{{ counts[1] }}</td>
                 </tr>
-                <tr>
-                    <td>Tweets from Alberta</td>
-                    <td>{{ counts[2] }}</td>
+				{% for i in range(0,provinces|length) %}
+				<tr>
+                    <td>Tweets from {{ provinces[i] }}</td>
+                    <td>{{ counts[i+2] }}</td>
                 </tr>
                 <tr>
-                    <td>Tweets from Ontario</td>
-                    <td>{{ counts[6] }}</td>
-                </tr>
-                <tr>
-                    <td>Tweets from Saskatchewan</td>
-                    <td>{{ counts[3] }}</td>
-                </tr>
-                <tr>
-                    <td>Tweets from British Columbia</td>
-                    <td>{{ counts[4] }}</td>
-                </tr>
-                <tr>
-                    <td>Tweets from Manitoba</td>
-                    <td>{{ counts[5] }}</td>
-                </tr>
-                <tr>
-                    <td>Tweets from Quebec</td>
-                    <td>{{ counts[7] }}</td>
-                </tr>
+				{% endfor %}
                 </tbody>
                 </table>
             </div>
