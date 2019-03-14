@@ -17,16 +17,16 @@
                 <tbody>
 				<tr>
                     <td>Total Tweets</td>
-                    <td>{{ counts[0] }}</td>
+                    <td>{{ "{:,.0f}".format(counts[0]) }}</td>
                 </tr>
                 <tr>
                     <td>Tweets with Coordinates</td>
-                    <td>{{ counts[1] }}</td>
+                    <td>{{ "{:,.0f}".format(counts[1]) }}</td>
                 </tr>
 				{% for i in range(0,provinces|length) %}
 				<tr>
                     <td>Tweets from {{ provinces[i] }}</td>
-                    <td>{{ counts[i+2] }}</td>
+                    <td>{{ "{:,.0f}".format(counts[i+2]) }}</td>
                 </tr>
                 <tr>
 				{% endfor %}
