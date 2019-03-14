@@ -138,21 +138,20 @@ def graph_demo():
 	header = header[:-1]
 	
 	stats = ''
-    for date in unique_dates:
-        date = str(date).split()[0]
-        stats += date + ','
-        for k in tw:
-            count = 0
-            for tweet in sel_tweets:
-                cd = str(tweet[3]).split()[0]
-                if date != cd:
-                    continue
-                txt = tweet[0].encode('punycode')
-                if re.search(k, txt, re.IGNORECASE):
-                    count += 1
-            stats += str(count) + ','
-        stats = stats[:-1] + '\\n'
-	
+	for date in unique_dates:
+		date = str(date).split()[0]
+		stats += date + ','
+		for k in tw:
+			count = 0
+			for tweet in sel_tweets:
+				cd = str(tweet[3]).split()[0]
+				if date != cd: continue
+				txt = tweet[0].encode('punycode')
+				if re.search(k, txt, re.IGNORECASE):
+					count += 1
+			stats += str(count) + ','
+		stats = stats[:-1] + '\\n'
+
 	tw = top_tags()
 	
 	return render_template('grebe/demo/graph.html',active='graph',stats=stats,header=header,top_words=tw,selw=filter_word,sel_prov=sel_prov,provinces=CANADA_PROVINCES)
