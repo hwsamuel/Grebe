@@ -1,10 +1,10 @@
 ## Grebe Social Data Aggregator
 
-Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [__demo__](http://199.116.235.207/grebe/) about how the data collected by Grebe can be analyzed and visualized in various ways. This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
+Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [__demo__](http://199.116.235.207/grebe) to see how the data collected by Grebe can be analyzed and visualized in various ways. The demo is IaaS-hosted thanks to [Cybera](http://www.cybera.ca). This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
  
 ## Get the Web App Running
 
-1. Install [Python](https://www.python.org/downloads) 
+1. Install [Python](https://www.python.org/downloads)
 2. Install [Flask](http://flask.pocoo.org/) by using `pip install flask`
 3. Install Flash's HTTP Auth dependency via `pip install flask-httpauth`
 4. Install [MariaDB](https://mariadb.com/downloads) and edit `spyder.py`, `gexport.py`, `gserver.py`, `gstats.py` to enter your database username and password 
