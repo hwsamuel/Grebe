@@ -1,6 +1,6 @@
 ## Grebe Social Data Aggregator
 
-Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [demo] about how the data collected by Grebe can be analyzed and visualized in various ways. This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
+Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [__demo__](http://199.116.235.207/grebe/) about how the data collected by Grebe can be analyzed and visualized in various ways. This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
  
 ## Get the Web App Running
 
