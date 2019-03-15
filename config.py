@@ -15,7 +15,7 @@ CONSUMER_SECRET = 'twitter-key2'
 ACCESS_TOKEN = 'twitter-token1'
 ACCESS_TOKEN_SECRET = 'twitter-token2'
 
-USERS = ['GovCanHealth','AHS_media','HQOntario','OntarioHealthC','PHSAofBC','TeamPAL','SaskHealth','HT_Manitoba','Doctors_NS', 'santemontreal']
+USERS = ['GovCanHealth','GouvCanSante','AHS_media','HQOntario','OntarioHealthC','PHSAofBC','TeamPAL','SaskHealth','Doctors_NS','santemontreal','CBCHealth']
 
 CANADA_CIRCLES = ['61.354339,-114.763955,841mi', '56.920424,-78.642489,765mi', '48.390565,-59.404899,425mi', '52.577178,-100.464798,252mi', '44.285842,-80.404523,105mi', '47.489098,-74.289165,109mi'] # http://bit.ly/ca_circle_inscribed
 
