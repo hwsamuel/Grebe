@@ -16,5 +16,5 @@
 1. Sign up for a [Twitter Developer](http://developer.twitter.com/) account
 2. Set up your [Twitter API keys](http://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/)
 3. Edit `spyder.py` and enter your API keys
-4. In a terminal, use the following command to run the aggregator `python spyder.py [status | search]`
+4. In a terminal, use the following command to run the aggregator `python spyder.py [status | search | stream]`
 5. If you want to aggregate data automatically, set up instances of the command above to run at scheduled intervals, for example as a cron job
