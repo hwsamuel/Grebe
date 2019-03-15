@@ -1,4 +1,8 @@
-# Get the Web App Running
+## Grebe Social Data Aggregator
+
+Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [demo] about how the data collected by Grebe can be analyzed and visualized in various ways. This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
+ 
+## Get the Web App Running
 
 1. Install [Python](https://www.python.org/downloads) 
 2. Install [Flask](http://flask.pocoo.org/) by using `pip install flask`
@@ -11,7 +15,7 @@
 9. In a terminal, use the command `python gserver.py` to run the Flask server
 10. In your web browser, go to [http://127.0.0.1:5000/grebe/](http://127.0.0.1:5000/grebe/)
 
-# Aggregating Twitter Data
+## Aggregating Twitter Data
 
 1. Sign up for a [Twitter Developer](http://developer.twitter.com/) account
 2. Set up your [Twitter API keys](http://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/)
