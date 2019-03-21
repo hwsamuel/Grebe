@@ -4,6 +4,7 @@ from datetime import datetime
 import re, pickle, os.path, time, hashlib, sys
 import mysql.connector as mariadb
 
+sys.path.append('../')
 from config import *
 
 reload(sys)
