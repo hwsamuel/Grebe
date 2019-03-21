@@ -45,7 +45,7 @@ Please cite the following [publication](http://www.hwsamuel.com/assets/downloads
 ## Initializing Cache
 
 1. To visualize and display data faster in the web app, the cache directory is set in `config.py` as `HOME_DIR`.
-2. To set up the cache, run via `python scripts/cacher.py [data tags stats]`.
+2. To set up the cache, run `python cacher.py [data tags stats]` from the `scripts` folder.
 3. Clean up your cache directory regularly so it doesn't fill your drive, a sample _bash_ script is provided here that can be set up to run regularly (replace `HOME_DIR` with the actual path to your directory).
 
 ```
@@ -63,7 +63,7 @@ fi
 
 ## Viewing Web App
 
-1. In a terminal, use the command `python webapp/server.py` to run the Flask server
+1. In a terminal from the `webapp` folder, use the command `python server.py` to run the Flask server
 2. In your web browser, go to [http://127.0.0.1:5000/grebe/](http://127.0.0.1:5000/grebe/)
 3. When using IaaS hosting, you can serve the Flask web app using [uWSGI](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-16-04).
 4. PaaS hosting configurations depend on the provider, but here is one for [Heroku](https://medium.com/the-andela-way/deploying-a-python-flask-app-to-heroku-41250bda27d0).
