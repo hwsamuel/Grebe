@@ -2,6 +2,19 @@
 
 Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [__demo__](http://199.116.235.207/grebe) to see how the data collected by Grebe can be analyzed and visualized in various ways. This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
 
+Please cite the following [publication](http://www.hwsamuel.com/assets/downloads/wi2018.pdf) if you intend to use this source code for your research.
+
+```
+@inproceedings{SamuelNooriFaraziZaiane2018,
+  title = {{Context Prediction in the Social Web Using Applied Machine Learning: A Study of Canadian Tweeters}},
+  author = {Samuel, Hamman and Noori, Benyamin and Farazi, Sara and Zaiane, Osmar},
+  booktitle = {2018 IEEE/WIC/ACM International Conference on Web Intelligence (WI)},
+  pages = {230--237},
+  year = {2018},
+  organization = {IEEE}
+}
+```
+
 ## Prerequisites
 
 1. For hosting, you can use IaaS with [Cybera](http://www.cybera.ca) or [Digital Ocean](https://www.digitalocean.com), PaaS with [OpenShift](https://www.openshift.com) or [Heroku](https://www.heroku.com), or just use your laptop/computer (not recommended due to space and processing limitations).
