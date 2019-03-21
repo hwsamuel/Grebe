@@ -50,12 +50,11 @@ Please cite the following [publication](http://www.hwsamuel.com/assets/downloads
 
 ```
 #!/bin/bash
-
 LIMIT="1000000" # 1GB
 SIZE=$(du --apparent-size HOME_DIR | cut -f1)
 if (($SIZE > $LIMIT))
 then
-    rm -f /home/ubuntu/.cache/grebe/*
+    rm -f HOME_DIR/*
     echo "Cache cleared"
 else
     echo "Cache preserved"
