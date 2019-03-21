@@ -2,7 +2,7 @@
 
 Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [__demo__](http://199.116.235.207/grebe) to see how the data collected by Grebe can be analyzed and visualized in various ways.
 
-Please cite the following [publication](http://www.hwsamuel.com/assets/downloads/wi2018.pdf) if you intend to use this source code for your research. This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
+Please cite the following [publication](http://www.hwsamuel.com/assets/downloads/wi2018.pdf) when using our source code for your research. This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
 
 ```
 @inproceedings{SamuelNooriFaraziZaiane2018,
