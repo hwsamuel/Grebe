@@ -1,8 +1,8 @@
 ## Grebe Social Data Aggregator [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [__demo__](http://199.116.235.207/grebe) to see how the data collected by Grebe can be analyzed and visualized in various ways. This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
+Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [__demo__](http://199.116.235.207/grebe) to see how the data collected by Grebe can be analyzed and visualized in various ways.
 
-Please cite the following [publication](http://www.hwsamuel.com/assets/downloads/wi2018.pdf) if you intend to use this source code for your research.
+Please cite the following [publication](http://www.hwsamuel.com/assets/downloads/wi2018.pdf) if you intend to use this source code for your research. This project is supported by the [Alberta Machine Intelligence Institute (Amii)](http://amii.ca).
 
 ```
 @inproceedings{SamuelNooriFaraziZaiane2018,
