@@ -1,5 +1,6 @@
-import mysql.connector as mariadb
+import mysql.connector as mariadb, sys
 
+sys.path.append('../')
 from config import *
 
 mariadb_connection = mariadb.connect(user=DB_USER, password=DB_PWD, database=DB_NAME)

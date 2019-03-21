@@ -3,9 +3,8 @@
 from datetime import datetime, timedelta
 import sys, pickle, os.path, re, operator
 
-from gexport import *
-from gstats import *
-from config import *
+from exporter import *
+from counter import *
 
 def demo_tweets(start, end, partition = 5):
 	all_tweets = []

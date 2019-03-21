@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
-import time, mysql.connector as mariadb, pickle
+import time, mysql.connector as mariadb, pickle, sys
 
+sys.path.append('../')
 from config import *
 
 mariadb_connection = mariadb.connect(user=DB_USER, password=DB_PWD, database=DB_NAME)
