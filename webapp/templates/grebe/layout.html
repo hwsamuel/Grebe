@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <head>
 	<title>Grebe</title>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    {% block head %}{% endblock %}
 
-	{% block head %}{% endblock %}
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
     <style>
         .navbar {
             background: #444;
