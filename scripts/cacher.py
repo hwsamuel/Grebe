@@ -39,6 +39,7 @@ def demo_stats():
 	pickle.dump(counts, open(stats_cache, "wb"))
 
 def demo_tags():
+	STOPWORDS_FILE = "glasgow_stopwords.txt"
 	top_cache = HOME_DIR + "top_tags.p"
 	demo_cache = HOME_DIR + "demo_data.p"
 	if os.path.isfile(demo_cache):
