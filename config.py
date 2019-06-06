@@ -22,5 +22,3 @@ CANADA_CIRCLES = ['61.354339,-114.763955,841mi', '56.920424,-78.642489,765mi', '
 CANADA_SQUARES = '-141.0,48.9,-52.5,70.0, -95.1,41.9,-52.5,48.9, -125.66,48.29,-123.03,49.0' # http://boundingbox.klokantech.com
 
 CANADA_PROVINCES = ['Ontario', 'Alberta', 'British Columbia', 'Manitoba', 'Nova Scotia', 'New Brunswick', 'Newfoundland and Labrador', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Northwest Territories', 'Nunavut', 'Yukon']
-
-STOPWORDS_FILE = "static/glasgow"
