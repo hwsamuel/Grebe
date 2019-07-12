@@ -20,7 +20,7 @@ Please cite the following [publication](http://www.hwsamuel.com/assets/downloads
 1. For hosting, you can use IaaS with [Cybera](http://www.cybera.ca) or [Digital Ocean](https://www.digitalocean.com), PaaS with [OpenShift](https://www.openshift.com) or [Heroku](https://www.heroku.com), or just use your laptop/computer (not recommended due to space and processing limitations).
 2. Install [Python](https://www.python.org/downloads).
 3. Install [Flask](http://flask.pocoo.org/) by using `pip install flask`.
-4. Install Flash's HTTP Auth dependency via `pip install flask-httpauth`.
+4. Install Flask's HTTP Auth dependency via `pip install flask-httpauth`.
 5. Install [TwitterAPI](https://github.com/geduldig/TwitterAPI) via `pip install TwitterAPI`.
 6. Install [MariaDB](https://mariadb.com/downloads).
 7. Run the SQL commands in `schema.sql` to set up a database.
