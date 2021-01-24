@@ -1,4 +1,4 @@
-## Grebe Social Data Aggregator [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+## Grebe Social Data Aggregator [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 Grebe aggregates geo-fenced Canadian Twitter data for research in sociology and public health. View our [__demo__](http://199.116.235.207/grebe) to see how the data collected by Grebe can be analyzed and visualized in various ways.
 
@@ -63,8 +63,7 @@ fi
 
 ## Viewing Web App
 
-1. In a terminal from the `webapp` folder, use the command `python server.py` to run the Flask server.
-2. In your web browser, go to [http://127.0.0.1:5000/grebe/](http://127.0.0.1:5000/grebe/)
-3. When using IaaS hosting, you can serve the Flask web app using [uWSGI](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-16-04).
-4. PaaS hosting configurations depend on the provider, but here is one for [Heroku](https://medium.com/the-andela-way/deploying-a-python-flask-app-to-heroku-41250bda27d0).
-5. The __[Grebe Demo](http://199.116.235.207/grebe)__ uses IaaS hosting with [Cybera](http://www.cybera.ca).
+- In a terminal from the `webapp` folder, use the command `python server.py` to run the Flask server.
+- In your web browser, go to [http://127.0.0.1:5000/grebe/](http://127.0.0.1:5000/grebe/)
+- When using IaaS hosting, you can serve the Flask web app using [uWSGI](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-16-04).
+- PaaS hosting configurations depend on the provider, but here is one for [Heroku](https://medium.com/the-andela-way/deploying-a-python-flask-app-to-heroku-41250bda27d0).
