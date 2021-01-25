@@ -15,6 +15,12 @@ Please cite the following [publication](https://ieeexplore.ieee.org/document/860
 }
 ```
 
+# Demo
+
+A working [live web app](http://199.116.235.207/grebe) is available for demo purposes.
+
+![Grebe Web App Demo](demo.png)
+
 ## Prerequisites
 
 1. For hosting, you can use IaaS with [Cybera](http://www.cybera.ca) or [Digital Ocean](https://www.digitalocean.com), PaaS with [OpenShift](https://www.openshift.com) or [Heroku](https://www.heroku.com), or just use your laptop/computer (not recommended due to space and processing limitations).
